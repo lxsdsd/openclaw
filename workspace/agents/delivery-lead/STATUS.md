@@ -1,0 +1,14 @@
+- state: completed
+- updated_at: 2026-03-13 08:16 UTC
+- scope: Applied one low-risk docs-only typo fix in `projects/english-study/repo`; main then resolved the local git identity blocker and completed the local commit.
+- completed_work:
+  - Fixed the user-facing docs typo `resquest` -> `request` in `projects/english-study/repo/docs/source/guide/project_settings.md`.
+  - Fixed the mirrored typo `resquest` -> `request` in `projects/english-study/repo/docs/source/guide/project_settings_lse.md`.
+- git_outcome:
+  - Initial local commit attempt failed because repo-local git author identity was missing.
+  - Main configured repo-local `user.name` and `user.email` only for this repo, then completed `git commit -m "docs: fix test request typo"` successfully.
+  - Resulting commit: `fbcc0dc`.
+- next_step:
+  - Continue with a safe code-level small fix or browser-based validation pass for `projects/english-study/repo`.
+- blocker:
+  - none for local commits in this repo now.

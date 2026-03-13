@@ -1,0 +1,21 @@
+# builder-b STATUS.md
+
+- status: done
+- updated_at: 2026-03-13 04:12 UTC
+- result: extended the existing minimal verification seam in `/app/extensions/feishu/src/bot.todo-command-normalization.test.ts`
+- seam: `parseFeishuMessageEvent()` in `/app/extensions/feishu/src/bot.ts:771` remains the smallest safe pre-router contract because upcoming `记录待办` parser/router work can consume `ctx.content` after bot mentions are stripped and non-bot mentions are normalized
+- coverage_added:
+  - existing isolated checks in `/app/extensions/feishu/src/bot.todo-command-normalization.test.ts` already cover single-line `@bot 记录待办 ...` normalization
+  - added a multiline case: `@bot 记录待办\n跟 @Alice 对齐发布计划` now verifies that line breaks survive bot-mention stripping while non-bot mentions still normalize to Feishu `<at ...>` markup
+- why_this_is_safe:
+  - edited only `/app/extensions/feishu/src/bot.todo-command-normalization.test.ts`
+  - avoided `/app/extensions/feishu/src/bot.ts` and `/app/extensions/feishu/src/bot.test.ts`, which are the most likely overlap points for builder-a's parser/router integration work
+- related_test_surface:
+  - `/app/extensions/feishu/src/bot.stripBotMention.test.ts` already covers generic mention stripping behavior
+  - `/app/extensions/feishu/src/bot.test.ts:548` covers mention-prefixed slash-command probing in the full dispatch path, but that file is a higher-conflict place to extend right now
+- validation:
+  - attempted `pnpm vitest run /app/extensions/feishu/src/bot.todo-command-normalization.test.ts` from `/app/extensions/feishu`, but `vitest` was not on that path
+  - attempted `pnpm exec vitest run --config vitest.extensions.config.ts extensions/feishu/src/bot.todo-command-normalization.test.ts` from `/app`, but this checkout currently has no installed local `vitest` binary (`ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL`; `/app/node_modules/.bin/vitest` missing)
+- recommendation:
+  - once dependencies are available, validate with `pnpm exec vitest run --config /app/vitest.extensions.config.ts /app/extensions/feishu/src/bot.todo-command-normalization.test.ts`
+  - if builder-a later needs a router-specific seam beyond normalization, the next safest seam is a new pure parser test file fed by normalized `ctx.content`, not more edits inside `/app/extensions/feishu/src/bot.test.ts`

@@ -1,0 +1,57 @@
+[
+  {
+    "name": "priority update by id",
+    "message": {
+      "channel": "feishu-dm",
+      "user_id": "ou_demo_user",
+      "message_id": "om_demo_priority_001",
+      "text": "改成 P0 td-20260313-001",
+      "received_at": "2026-03-13T10:35:00Z",
+      "trigger": "message"
+    }
+  },
+  {
+    "name": "priority update by title",
+    "message": {
+      "channel": "feishu-dm",
+      "user_id": "ou_demo_user",
+      "message_id": "om_demo_priority_002",
+      "text": "把\"把 TODO 收件箱接入第一版 parser/router\"改成 P1",
+      "received_at": "2026-03-13T10:36:00Z",
+      "trigger": "message"
+    }
+  },
+  {
+    "name": "inbox view",
+    "message": {
+      "channel": "feishu-dm",
+      "user_id": "ou_demo_user",
+      "message_id": "om_demo_view_001",
+      "text": "看收件箱",
+      "received_at": "2026-03-13T10:37:00Z",
+      "trigger": "message"
+    }
+  },
+  {
+    "name": "combined todo view",
+    "message": {
+      "channel": "feishu-dm",
+      "user_id": "ou_demo_user",
+      "message_id": "om_demo_view_002",
+      "text": "待办列表",
+      "received_at": "2026-03-13T10:38:00Z",
+      "trigger": "message"
+    }
+  },
+  {
+    "name": "long todo view",
+    "message": {
+      "channel": "feishu-dm",
+      "user_id": "ou_demo_user",
+      "message_id": "om_demo_view_003",
+      "text": "看长期待办",
+      "received_at": "2026-03-13T10:39:00Z",
+      "trigger": "message"
+    }
+  }
+]

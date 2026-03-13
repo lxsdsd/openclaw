@@ -1,0 +1,20 @@
+- state: needs-review
+- updated_at: 2026-03-13 05:00 UTC
+- summary: Implemented the first runnable explicit Feishu `记录待办` capture path in the real message router and wired it to append normalized entries into `TODO_INBOX.md` with duplicate protection by `message_id`.
+- first_action: Inspected `/app/extensions/feishu/src/bot.ts`, `/app/extensions/feishu/src/feishu-command-handler.ts`, and `/app/extensions/feishu/src/bot.todo-command-normalization.test.ts` to confirm the earliest safe pre-agent interception point was the inbound text path in `bot.ts` after normalization but before media resolution and agent dispatch.
+- evidence_plan: Prove the real integration seam with exact file references, then either patch that seam or stop with a blocker. The seam was proven and patched at `/app/extensions/feishu/src/bot.ts:1220`.
+- what_changed: Added `/app/extensions/feishu/src/todo-command.ts` for explicit `记录待办` parsing, empty-command reply handling, inbox id generation, `TODO_INBOX.md` append, and duplicate detection via recorded `message_id`; added `/app/extensions/feishu/src/todo-command.test.ts`; inserted the early-return capture hook in `/app/extensions/feishu/src/bot.ts:1220` so explicit todo commands reply immediately instead of falling through to the normal agent pipeline.
+- evidence:
+  - normalization already preserved todo command text in `/app/extensions/feishu/src/bot.todo-command-normalization.test.ts:17`
+  - real router hook now lives in `/app/extensions/feishu/src/bot.ts:1220`
+  - parser and inbox append logic live in `/app/extensions/feishu/src/todo-command.ts:13` and `/app/extensions/feishu/src/todo-command.ts:63`
+  - normalized inbox entry rendering and dedupe-by-message-id live in `/app/extensions/feishu/src/todo-command.ts:117` and `/app/extensions/feishu/src/todo-command.ts:136`
+  - focused coverage was added in `/app/extensions/feishu/src/todo-command.test.ts:17`
+- validation:
+  - `pnpm vitest run /app/extensions/feishu/src/todo-command.test.ts /app/extensions/feishu/src/bot.todo-command-normalization.test.ts` failed because `vitest` is not exposed on PATH in this environment; logged in `/home/node/.openclaw/workspace/.learnings/ERRORS.md`
+  - fallback smoke check passed with the vendored tsx runner: `node /app/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/cli.mjs /tmp/feishu-todo-smoke.ts`
+- blockers:
+  - full Vitest execution remains environment-blocked here because the repo does not expose a working `vitest` binary on PATH despite package metadata being present
+- next: main can review and either (1) accept this first runnable capture path, then assign read commands / priority updates next, or (2) ask for environment-level test runner repair before broader Feishu todo work continues.
+- main_needs_reassign: no; main can review and accept or request follow-up.
+- recommended pattern: For channel-command work in Feishu, patch the post-normalization / pre-agent seam in `/app/extensions/feishu/src/bot.ts` first, then keep command parsing and file mutation in a separate pure helper so the routing evidence and storage behavior can be validated independently.

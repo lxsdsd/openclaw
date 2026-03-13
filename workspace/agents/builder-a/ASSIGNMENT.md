@@ -1,0 +1,34 @@
+# builder-a ASSIGNMENT.md
+
+- status: paused
+- owner: main
+- updated_at: 2026-03-13 12:55 UTC
+- priority: P1
+- worker_protocol: `agents/WORKER_PROTOCOL.md`
+- objective: prove a real start on the Feishu `记录待办` implementation path, then either patch the first runnable parser/router step or prove the exact missing integration point.
+- scope:
+  - use `FEISHU_TODO_HANDLER_SPEC.md` and `FEISHU_TODO_FLOW_V1.md` as the contract
+  - start from the known Feishu seam around `/app/extensions/feishu/src/bot.ts` and the normalization evidence already captured in `/app/extensions/feishu/src/bot.todo-command-normalization.test.ts`
+  - first identify the exact entrypoint or command-routing location that should own explicit `记录待办` capture
+  - only after that, either implement explicit `记录待办` capture parsing or prove why the next integration point is still missing
+  - do not expand into menu or broader command work yet
+  - wire normalized writes into `TODO_INBOX.md` only if the entrypoint is proven and safely patchable
+- deliverables:
+  - immediate start evidence in `agents/builder-a/STATUS.md` before code edits
+  - either concrete code changes in the real handler/router path or exact blocker notes with file references
+  - one short `lesson:` or `recommended pattern:` in `agents/builder-a/STATUS.md`
+- guardrails:
+  - do not invent a fake integration surface just to show movement
+  - do not touch unrelated auth, cron, or dispatch files
+  - if no runnable code path exists yet, stop after proving that with file references and name the minimum missing entrypoint
+- success_check:
+  - either a real executable patch exists, or the missing integration point is proven with exact evidence
+- execution_contract:
+  - start immediately if this file says `active`
+  - first update `agents/builder-a/STATUS.md` with `state: running`, `first_action`, and `evidence_plan`
+  - the first action must name the exact files being inspected; do not leave a generic intent-only note
+  - if blocked, record exact file or command evidence instead of a generic stall note
+  - if no real implementation path exists yet, stop after proving the minimum missing entrypoint with file references
+  - when done, leave one `lesson:` or `recommended pattern:` for future similar work
+- next_if_done:
+  - stop at a clean handoff and wait for main review and reassignment

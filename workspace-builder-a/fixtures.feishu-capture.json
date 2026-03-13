@@ -1,0 +1,8 @@
+{
+  "channel": "feishu-dm",
+  "user_id": "ou_demo_user",
+  "message_id": "om_demo_capture_001",
+  "text": "记录待办 P0 把 TODO 收件箱接入第一版 parser/router",
+  "received_at": "2026-03-13T07:56:00Z",
+  "trigger": "message"
+}

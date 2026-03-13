@@ -1,0 +1,21 @@
+# watchdog ASSIGNMENT.md
+
+- status: completed
+- owner: main
+- updated_at: 2026-03-13 12:55 UTC
+- priority: P1
+- objective: audit worker progress, detect stalls, and recommend reassignment without doing builder or research implementation.
+- scope:
+  - review `agents/builder-a/STATUS.md` and `agents/research/STATUS.md`
+  - flag any worker with no material progress after a reasonable run window
+  - check whether `builder-b` should stay idle or receive a non-conflicting task
+  - update `agents/watchdog/STATUS.md` with concrete recommendations only
+- deliverables:
+  - concise progress audit and next-action recommendation in `agents/watchdog/STATUS.md`
+- guardrails:
+  - do not edit product/code files for implementation
+  - do not re-prioritize without writing the recommendation clearly for main
+- success_check:
+  - main can tell in one read whether workers are moving or need rerouting
+- next_if_done:
+  - wait for main review and reassignment

@@ -1,0 +1,22 @@
+# builder-b ASSIGNMENT.md
+
+- status: completed
+- owner: main
+- updated_at: 2026-03-13 12:55 UTC
+- priority: P1
+- objective: prepare the non-conflicting verification lane for the Feishu `记录待办` implementation.
+- scope:
+  - inspect existing Feishu tests under `/app/extensions/feishu/src/`
+  - identify the smallest safe test target for the upcoming parser/router work
+  - if a minimal isolated test can be added without conflicting with builder-a files, add it; otherwise record the exact recommended test seam
+  - do not modify the same implementation files builder-a is likely to patch unless absolutely necessary
+- deliverables:
+  - minimal test patch or exact test-plan evidence in `agents/builder-b/STATUS.md`
+- guardrails:
+  - stay off unrelated gateway/runtime/auth files
+  - prefer test scaffolding and seam discovery over speculative refactors
+  - if file overlap with builder-a becomes likely, stop and leave the safest next test target
+- success_check:
+  - main can either run/accept a minimal test addition, or use the recorded seam to validate builder-a quickly
+- next_if_done:
+  - wait for main review and reassignment

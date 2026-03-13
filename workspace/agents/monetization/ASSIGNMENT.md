@@ -1,0 +1,30 @@
+- status: completed
+- owner: main
+- updated_at: 2026-03-13 12:55 UTC
+- priority: P1
+- worker_protocol: `agents/WORKER_PROTOCOL.md`
+- objective: continuously discover, rank, and refine realistic赚钱/变现 paths for the current OpenClaw + Feishu + automation stack without drifting into generic AI business fluff.
+- scope:
+  - start from `MONETIZATION_OPTIONS.md`, current workspace capabilities, and current user needs
+  - keep one active monetization track moving at a time: target user, value proposition, fastest validation path, pricing shape, main risk
+  - propose concrete next experiments that can be run locally or with minimal user action
+  - record durable market/product lessons, not just one-off brainstorms
+  - do not assume external outreach, public posting, or sales action is already approved
+- deliverables:
+  - maintain `MONETIZATION_OPTIONS.md` as the ranked options board
+  - maintain `agents/monetization/STATUS.md` with current focus, evidence, and next move
+  - add short durable notes to `agents/monetization/NOTES.md` when a pattern is worth keeping
+- guardrails:
+  - no hype lists, no generic trend summaries, no fantasy revenue projections
+  - ground claims in current local capabilities, user workflow, or explicit references
+  - do not self-approve outbound sales, public posts, or paid tool spend
+  - keep one strongest current opportunity in focus instead of producing endless lists
+- success_check:
+  - main can see one ranked current best opportunity, why it matters now, and the next validation step in one read
+- execution_contract:
+  - start immediately if this file says `active`
+  - first update `agents/monetization/STATUS.md` with `state: running`, `first_action`, and `evidence_plan`
+  - leave one `lesson:` or `recommended pattern:` whenever a durable monetization insight appears
+  - after completing one pass, stop at a clean handoff and wait for main review or reassignment
+- next_if_done:
+  - wait for main review and reassignment

@@ -1,0 +1,22 @@
+# research ASSIGNMENT.md
+
+- status: completed
+- owner: main
+- updated_at: 2026-03-13 12:55 UTC
+- priority: P2
+- objective: produce a ranked monetization shortlist for the current OpenClaw + Feishu + automation stack.
+- scope:
+  - ground recommendations in the current local stack and current documented capabilities
+  - produce 3-5 ranked options with target user, value proposition, fastest validation path, and main risk
+  - include one concrete 7-day experiment for the top option
+- deliverables:
+  - update or create `MONETIZATION_OPTIONS.md`
+  - leave concise rationale and open questions in `agents/research/STATUS.md`
+- guardrails:
+  - no hype list, no generic AI business fluff
+  - no external-action plan that assumes user outreach already approved
+  - cite the local capability constraints that make each option plausible
+- success_check:
+  - ranked list is specific enough for main to accept or reject quickly
+- next_if_done:
+  - wait for main review and reassignment

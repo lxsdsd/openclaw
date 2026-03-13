@@ -1,0 +1,26 @@
+- state: completed
+- updated_at: 2026-03-13 06:41 UTC
+- first_action: reviewed active-worker status files and checked for artifact-level evidence behind each current assignment before making any reroute recommendation.
+- evidence_plan: classify each active worker as `artifact`, `running-without-artifact`, or `stale/intent-only` so main can decide acceptance versus reassignment in one read.
+- summary: completed one concrete supervision pass across all currently active workers. `builder-a`, `builder-b`, and `research` have real current output; `monetization` is active but still only at running-intent level; `delivery-lead` has a fresh read-only start but no written project artifact yet. No lane is fully stale right now, but two lanes need tighter artifact deadlines.
+- worker_audit:
+  - `builder-a`: `artifact`. `agents/builder-a/STATUS.md` was updated at 05:00 UTC and records a concrete implementation patch: router hook at `/app/extensions/feishu/src/bot.ts:1220`, helper logic in `/app/extensions/feishu/src/todo-command.ts`, focused tests in `/app/extensions/feishu/src/todo-command.test.ts`, and a smoke-check path. This worker is no longer the stalled lane from the previous pass.
+  - `builder-b`: `artifact`. `agents/builder-b/STATUS.md` still points to a real non-conflicting verification patch in `/app/extensions/feishu/src/bot.todo-command-normalization.test.ts`. Artifact is real, but the status is older and already in a done state.
+  - `research`: `artifact`. `agents/research/STATUS.md` is completed and its claimed output matches the existing workspace artifact `MONETIZATION_OPTIONS.md`.
+  - `monetization`: `running-without-artifact`. `agents/monetization/STATUS.md` was refreshed at 05:41 UTC and shows a concrete focus shift, but there is no new artifact beyond the earlier `MONETIZATION_OPTIONS.md` update produced by `research`. Current lane has started, but not yet delivered a distinct monetization refinement.
+  - `delivery-lead`: `running-without-artifact`. `agents/delivery-lead/STATUS.md` was refreshed at 06:40 UTC and shows a legitimate read-only repo scan start in `projects/english-study/repo`, but no project note, issue list, or risk scan artifact is recorded yet.
+- stale_check:
+  - no worker is fully stale or assignment-only at this moment
+  - the closest to stale risk is `monetization` if it keeps the lane in `running` without updating `MONETIZATION_OPTIONS.md` or producing a sharper decision note on the next pass
+  - `delivery-lead` is freshly started, so it should not be rerouted yet, but it should produce a first written scan artifact before another long running window
+- blockers:
+  - `builder-a` and `builder-b` both record the same environment-level validation gap: local `vitest` execution is unavailable from the current setup
+  - no global queue blocker is otherwise proven
+- recommendation:
+  - main can review and potentially accept `builder-a`, `builder-b`, and `research` now because all three have concrete output
+  - do not reassign `builder-a`; that lane recovered and produced the needed first runnable implementation artifact
+  - keep `monetization` active only if main wants a tighter follow-up than `research`; otherwise this lane is duplicative and is the cleanest candidate to pause or rewrite to avoid two workers circling the same board
+  - keep `delivery-lead` active for one short window, but require the next update to include an actual project note or issue/risk artifact under `projects/english-study/`
+- next_step: hand off to main for acceptance review of the finished artifact lanes and for an explicit decision on whether `monetization` should continue as a refinement lane or be reassigned to a non-overlapping task.
+- recommended pattern: when two workers touch the same strategic topic, require the second lane to produce a differentiated artifact type or pause it quickly; otherwise `running` status can mask duplicate effort.
+- main_action: main should accept or reject artifact lanes directly, and should make the next reassignment decision on `monetization` before opening more parallel work.
