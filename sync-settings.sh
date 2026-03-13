@@ -36,8 +36,6 @@ copy_tree "$ROOT/workspace-research" "workspace-research"
 copy_tree "$ROOT/workspace-watchdog" "workspace-watchdog"
 
 {
-  echo "Last sync: $STAMP"
-  echo
   find "$REPO_DIR/config" "$REPO_DIR/workspace" "$REPO_DIR/workspace-builder-a" "$REPO_DIR/workspace-builder-b" "$REPO_DIR/workspace-research" "$REPO_DIR/workspace-watchdog" -type f \
     | sed "s#^$REPO_DIR/##" \
     | sort

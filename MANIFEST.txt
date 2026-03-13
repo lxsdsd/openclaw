@@ -1,5 +1,3 @@
-Last sync: 2026-03-13T13:51:57Z
-
 config/openclaw.json
 workspace-builder-a/AGENTS.md
 workspace-builder-a/ASSIGNMENT.md
