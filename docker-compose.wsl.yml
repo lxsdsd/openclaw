@@ -1,0 +1,19 @@
+services:
+  openclaw-gateway:
+    environment:
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      RIGHTCODE_API_KEY: ${RIGHTCODE_API_KEY:-}
+    volumes:
+      - openclaw_state:/home/node/.openclaw
+      - openclaw_gh_config:/home/node/.config/gh
+  openclaw-cli:
+    environment:
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      RIGHTCODE_API_KEY: ${RIGHTCODE_API_KEY:-}
+    volumes:
+      - openclaw_state:/home/node/.openclaw
+      - openclaw_gh_config:/home/node/.config/gh
+volumes:
+  openclaw_state:
+  openclaw_gh_config:
+

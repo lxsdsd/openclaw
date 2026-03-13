@@ -1,0 +1,43 @@
+FROM ghcr.io/openclaw/openclaw:latest
+
+USER root
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_BREAK_SYSTEM_PACKAGES=1 \
+    PIP_NO_CACHE_DIR=1 \
+    HOME=/home/node \
+    PATH=/home/node/.local/bin:/usr/local/bin:/usr/bin:/bin
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      ca-certificates \
+      curl \
+      ffmpeg \
+      gnupg \
+      jq \
+      ripgrep \
+      python3-pip \
+      python3-venv && \
+    mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      | dd of=/etc/apt/keyrings/githubcli-archive-keyring.gpg && \
+    chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      > /etc/apt/sources.list.d/github-cli.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends gh && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g @steipete/summarize mcporter undici xreach-cli
+
+RUN python3 -m pip install --break-system-packages \
+      yt-dlp \
+      feedparser \
+      https://github.com/Panniantong/agent-reach/archive/main.zip \
+      https://github.com/Panniantong/mcp-server-weibo/archive/refs/heads/main.zip
+
+RUN install -d -o node -g node /home/node/.agent-reach
+
+USER node
+
+RUN agent-reach install --env=auto || true
