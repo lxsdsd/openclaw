@@ -1,0 +1,5 @@
+.venv/
+.playwright-browsers/
+.aptlibs/
+__pycache__/
+route_files_tmp.txt
