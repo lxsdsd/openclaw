@@ -13,6 +13,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 ## Active
 
+- [P1] Slim or split the `report-2200-bjt` board-report prompt so the late report stops timing out; keep `report-2000-bjt` as the healthy reference path.
 - [P1] Keep the current `rightcode`-blocked worker jobs disabled until quota recovers or a different working model path is chosen; do not let them resume empty-spin.
 - [P1] Finish the English-study closeout pass: review which upstream-restored `label_studio/` and `web/` files should remain, decide how to handle the local `.aptlibs/` and `.playwright-browsers/` workaround, and prepare the second rollback commit.
 - [P1] Keep `projects/english-study/delivery/docx/` in sync with the Markdown delivery docs and spot-check layout edge cases after each export.
@@ -22,6 +23,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 ## Done recently
 
+- [x] Revalidated child-lane ownership at the 2026-03-16 14:15 UTC supervisor pass: no child worker is active, the known provider-blocked worker crons remain intentionally disabled, and the live recurring report issue is now tracked specifically as `report-2200-bjt` timeout repetition rather than as a generic worker stall.
 - [x] Kept child-lane ownership honest at the 2026-03-16 07:03 UTC supervisor pass: no child worker is currently active, the known provider-blocked worker crons remain intentionally disabled, and the late report problem is now tracked as a timeout-sizing issue rather than a generic worker stall.
 - [x] Tightened live `/home/node/.openclaw/openclaw.json` permissions from `755` to `600` and confirmed the deep audit dropped from `5 critical / 4 warn / 1 info` to `4 critical / 4 warn / 1 info`.
 - [x] Added `projects/english-study/tools/export_delivery_docs.py`, refreshed the English-study test/deploy docs, and generated Word copies under `projects/english-study/delivery/docx/`.

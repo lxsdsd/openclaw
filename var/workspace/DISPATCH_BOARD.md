@@ -10,6 +10,14 @@
 
 ## Active assignments
 
+## Supervisor pass - 2026-03-16 14:15 UTC
+
+- runtime rechecked from live CLI again, not the UI: `scripts/openclaw-live-cli.sh status --all`, `scripts/openclaw-live-cli.sh cron list --all --json`, and `scripts/openclaw-live-cli.sh agents list --bindings` all still succeeded, so OpenClaw does not look stuck and no host self-repair path is needed
+- child ownership still stays honest: there is no active worker to rescue or reassign, and scheduler health alone still does not make `research`, `delivery-lead`, or `monetization` the live owner of the queue
+- the parked provider-blocked worker jobs remain intentionally parked: `builder-a-night-feishu`, `watchdog-audit`, and `main-night-supervisor` are still disabled on the same provider `403` family, so keep them out of the queue
+- the late report lane has now crossed from a one-off symptom into a concrete control-plane task: `report-2200-bjt` remains enabled but has reached three consecutive timeout failures, while `report-2000-bjt` remains healthy
+- next concrete step: keep child lanes idle, preserve `main` as the only active owner, and explicitly slim or split the `report-2200-bjt` prompt/timeout budget instead of treating that recurring timeout as a worker stall
+
 ## Supervisor pass - 2026-03-16 07:03 UTC
 
 - runtime re-verified from live CLI again, not the UI: `scripts/openclaw-live-cli.sh status --all`, `scripts/openclaw-live-cli.sh cron list --all --json`, and `scripts/openclaw-live-cli.sh agents list --bindings` all succeeded, so OpenClaw is responsive enough for control-plane work and no host self-repair path is needed

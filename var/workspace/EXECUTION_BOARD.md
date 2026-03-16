@@ -14,8 +14,8 @@ Use it as the shared source of truth for:
 ## Runtime confidence
 
 - Status: usable-with-parked-worker-crons-and-one-heavy-report
-- Last full self-check: 2026-03-16 07:03 UTC
-- Last live probe: 2026-03-16 07:03 UTC
+- Last full self-check: 2026-03-16 14:15 UTC
+- Last live probe: 2026-03-16 14:15 UTC
 - Source of truth: live `status --all`, `agents list --bindings`, `channels status --probe`, `cron list --all --json`, `cron runs`, live `/home/node/.openclaw/workspace` file reads, and current worker `STATUS.md` artifacts
 - Do not trust UI-only impressions for runtime, skill availability, agent health, scheduler state, or host-shell mirror copies
 
@@ -37,7 +37,7 @@ Use it as the shared source of truth for:
 - Owner: `main`
 - Status: active
 - Goal: keep the queue honest, keep reports aligned with real state, and detect runtime regressions early
-- Next step: keep scheduled reports and supervisor prompts anchored to this board, slim them so they do not re-probe the whole runtime on every wake, and keep any cron lane that repeats provider auth `403` disabled until the quota/package issue is resolved or the model path changes; if the English-study identity/docs lane needs another try, reopen it explicitly instead of letting a failing scheduled worker spin
+- Next step: keep scheduled reports and supervisor prompts anchored to this board, keep any cron lane that repeats provider auth `403` disabled until the quota/package issue is resolved or the model path changes, and now explicitly slim or split the `report-2200-bjt` prompt/timeout budget because the late report has hit three consecutive timeout failures; if the English-study identity/docs lane needs another try, reopen it explicitly instead of letting a failing scheduled worker spin
 
 ### Lane B - Safe-now config hardening
 
@@ -100,7 +100,7 @@ Use it as the shared source of truth for:
 - Channel delivery: Feishu probe OK at 2026-03-15 11:20 UTC
 - Cron engine: mixed but not stuck; `builder-a-night-feishu`, `main-night-supervisor`, and `watchdog-audit` remain disabled on the known provider `403` family, while `research-night-money`, `delivery-lead-track`, `monetization-track`, and `report-2000-bjt` are currently scheduler-healthy.
 - Security audit snapshot: hardening lane already landed earlier; rerun the deep audit only when the security queue returns to the top
-- Scheduled reports: partial; `report-2000-bjt` is back to `lastStatus: ok`, while `report-2200-bjt` is now the remaining unstable path and is failing by timeout rather than auth denial, which points to an overweight late-report prompt or insufficient timeout budget
+- Scheduled reports: partial; `report-2000-bjt` remains `lastStatus: ok`, while `report-2200-bjt` is still the remaining unstable path and has now reached three consecutive timeout failures rather than auth denials, which points to an overweight late-report prompt or insufficient timeout budget
 - Heartbeat: partial; main heartbeat exists, last heartbeat shows skipped
 - agent-reach stack: partially runnable from `/home/gaga/agent-reach-env` and improved to `10/15` channels after wiring `mcporter`, `xreach-cli` compatibility, container-backed `gh` and `ffmpeg`, Exa, XiaohongShu MCP, and Weibo MCP; remaining gaps need proxy, a Groq key, or extra platform servers
 - Image input: OK at tool level

@@ -5,6 +5,7 @@
 - English-study delivery closeout reached a real rollback point: the delivery pack now includes `projects/english-study/delivery/05-收尾说明.md`, Word exports exist under `projects/english-study/delivery/docx/`, and the workspace commit `c49867585` captures this package.
 - The smallest safe hardening step is no longer pending: live `/home/node/.openclaw/openclaw.json` permissions are now `600`, and the live deep audit dropped from `5 critical / 4 warn / 1 info` to `4 critical / 4 warn / 1 info`.
 - The `rightcode` provider blocker is contained for now: live cron state shows the known `403`-blocked worker jobs remain disabled, so there is no enabled empty-spin loop while waiting for quota recovery or a new model path.
+- Live reporting is mixed but the remaining issue is now narrower: `report-2000-bjt` stays healthy, while `report-2200-bjt` has reached three consecutive timeout failures and should be treated as a prompt-sizing task, not as a worker-stall or generic auth issue.
 - Finish the English-study closeout in `main`: the delivery pack now exports to `projects/english-study/delivery/docx/`, and the remaining step is reviewing restored upstream files plus the local browser/shared-lib workaround before the second rollback commit
 - Close remaining skill activation gaps one by one: `github`
 - Maintain the local `skills/skill-vetting/` gate as the default pre-install review path
