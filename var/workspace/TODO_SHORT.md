@@ -13,6 +13,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 ## Active
 
+- [P1] Keep the current `rightcode`-blocked worker jobs disabled until quota recovers or a different working model path is chosen; do not let them resume empty-spin.
 - [P1] Finish the English-study closeout pass: review which upstream-restored `label_studio/` and `web/` files should remain, decide how to handle the local `.aptlibs/` and `.playwright-browsers/` workaround, and prepare the second rollback commit.
 - [P1] Keep `projects/english-study/delivery/docx/` in sync with the Markdown delivery docs and spot-check layout edge cases after each export.
 - [P1] Check whether `github` should be fully activated next; if yes, prompt for `gh auth` and verify.
@@ -21,6 +22,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 ## Done recently
 
+- [x] Tightened live `/home/node/.openclaw/openclaw.json` permissions from `755` to `600` and confirmed the deep audit dropped from `5 critical / 4 warn / 1 info` to `4 critical / 4 warn / 1 info`.
 - [x] Added `projects/english-study/tools/export_delivery_docs.py`, refreshed the English-study test/deploy docs, and generated Word copies under `projects/english-study/delivery/docx/`.
 - [x] Feishu DM channel paired and working.
 - [x] Gateway token mismatch cleared.

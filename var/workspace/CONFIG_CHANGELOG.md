@@ -210,3 +210,26 @@ Validation:
 
 - `var/workspace/scripts/openclaw-live-cli.sh gateway status --no-probe` reads the live container runtime
 - `var/workspace/scripts/openclaw-live-cli.sh cron list` shows active jobs for `main`, `watchdog`, `builder-a`, `research`, `monetization`, and `delivery-lead`
+
+## 2026-03-16
+
+### OpenClaw config permission hardening
+
+- tightened `/home/node/.openclaw/openclaw.json` from mode `755` to `600` inside the live gateway container
+- this change was runtime-side only; no token or policy values were changed
+- the live deep security audit summary dropped from `5 critical / 4 warn / 1 info` to `4 critical / 4 warn / 1 info`
+
+Validation:
+
+- `docker exec <openclaw-gateway> stat -c '%a %n' /home/node/.openclaw/openclaw.json`
+- `scripts/openclaw-live-cli.sh security audit --deep --json`
+
+### Provider-auth blocked cron state rechecked
+
+- re-verified from live `cron list --all --json` that the known `rightcode`-blocked worker jobs stay disabled instead of empty-spinning
+- confirmed `builder-a-night-feishu`, `main-night-supervisor`, and `watchdog-audit` are disabled with no next run scheduled
+- no enabled cron job currently shows the same `403 "API Key 不允许使用余额且无可用套餐"` blocker
+
+Validation:
+
+- `scripts/openclaw-live-cli.sh cron list --all --json`

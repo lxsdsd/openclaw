@@ -36,15 +36,15 @@ Use it as the shared source of truth for:
 - Owner: `main`
 - Status: active
 - Goal: keep the queue honest, keep reports aligned with real state, and detect runtime regressions early
-- Next step: keep scheduled reports and supervisor prompts anchored to this board, slim them so they do not re-probe the whole runtime on every wake, and park any cron lane that repeats provider auth `403` until the quota/package issue is resolved; if the English-study identity/docs lane needs another try, reopen it explicitly instead of letting a failing scheduled worker spin
+- Next step: keep scheduled reports and supervisor prompts anchored to this board, slim them so they do not re-probe the whole runtime on every wake, and keep any cron lane that repeats provider auth `403` disabled until the quota/package issue is resolved or the model path changes; if the English-study identity/docs lane needs another try, reopen it explicitly instead of letting a failing scheduled worker spin
 
 ### Lane B - Safe-now config hardening
 
-- Owner: `builder-a`
-- Status: paused
-- Goal: preserve the narrow `/home/node/.openclaw/openclaw.json` `755` -> `600` hardening lane as the next safe security task
-- Evidence: the 2026-03-15 07:23 UTC live probe still shows `/home/node/.openclaw/openclaw.json` at `755`, and live `openclaw security audit --deep --json` still reports `5 critical / 4 warn / 1 info`
-- Next step: keep this lane parked while the user-prioritized English-study pass is active; reopen it explicitly when security hardening returns to the top of the queue
+- Owner: `main`
+- Status: completed
+- Goal: apply the smallest non-breaking runtime hardening step by tightening live `/home/node/.openclaw/openclaw.json` permissions
+- Evidence: container-side `stat -c "%a %n" /home/node/.openclaw/openclaw.json` now returns `600 /home/node/.openclaw/openclaw.json`, and the live deep audit summary dropped from `5 critical / 4 warn / 1 info` to `4 critical / 4 warn / 1 info`
+- Next step: keep the remaining security items behind explicit user decisions instead of reopening this finished lane
 
 ### Lane C - English-study P0 scope reduction
 
