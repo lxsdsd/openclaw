@@ -22,6 +22,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 ## Done recently
 
+- [x] Kept child-lane ownership honest at the 2026-03-16 07:03 UTC supervisor pass: no child worker is currently active, the known provider-blocked worker crons remain intentionally disabled, and the late report problem is now tracked as a timeout-sizing issue rather than a generic worker stall.
 - [x] Tightened live `/home/node/.openclaw/openclaw.json` permissions from `755` to `600` and confirmed the deep audit dropped from `5 critical / 4 warn / 1 info` to `4 critical / 4 warn / 1 info`.
 - [x] Added `projects/english-study/tools/export_delivery_docs.py`, refreshed the English-study test/deploy docs, and generated Word copies under `projects/english-study/delivery/docx/`.
 - [x] Feishu DM channel paired and working.

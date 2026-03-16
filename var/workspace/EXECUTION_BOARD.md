@@ -13,9 +13,9 @@ Use it as the shared source of truth for:
 
 ## Runtime confidence
 
-- Status: usable-with-provider-auth-blockers
-- Last full self-check: 2026-03-15 12:13 UTC
-- Last live probe: 2026-03-15 12:13 UTC
+- Status: usable-with-parked-worker-crons-and-one-heavy-report
+- Last full self-check: 2026-03-16 07:03 UTC
+- Last live probe: 2026-03-16 07:03 UTC
 - Source of truth: live `status --all`, `agents list --bindings`, `channels status --probe`, `cron list --all --json`, `cron runs`, live `/home/node/.openclaw/workspace` file reads, and current worker `STATUS.md` artifacts
 - Do not trust UI-only impressions for runtime, skill availability, agent health, scheduler state, or host-shell mirror copies
 
@@ -27,6 +27,7 @@ Use it as the shared source of truth for:
 - If the same failure repeats twice with no new evidence, stop retry loops and switch to one deterministic fallback or self-repair path
 - If a cron lane repeats provider auth or quota `403` errors, treat it as an external blocker, disable that job instead of letting it keep waking, and record the blocker plus owner in `TODO_USER.md` or the board
 - If the provider daily quota is exhausted for the current `rightcode` path, alert the user once, park the affected background jobs, and stop retry narration until quota recovers or the model path changes
+- If a report cron stops failing on auth but still times out, treat that as a prompt/timeout sizing problem, not as proof that runtime or child workers are stalled
 - Heartbeat is a helper, not the main execution backbone
 
 ## Active lanes
@@ -97,9 +98,9 @@ Use it as the shared source of truth for:
 
 - Gateway reachability: OK from the 2026-03-15 11:20 UTC live `status --all` probe; one `cron runs` request hit a transient `1000 normal closure`, then succeeded on retry
 - Channel delivery: Feishu probe OK at 2026-03-15 11:20 UTC
-- Cron engine: degraded by provider-side failures; the latest 12:00 UTC `builder-a-night-feishu`, 12:40 UTC `main-night-supervisor`, and 13:10 UTC `watchdog-audit` runs all failed fast with `403 "API Key 不允许使用余额且无可用套餐"`, which points to quota or package denial rather than an internal logic hang. `research-night-money`, `delivery-lead-track`, and `monetization-track` remain scheduler-healthy.
-- Security audit snapshot: last reverified at 2026-03-15 07:23 UTC and still reporting `5 critical / 4 warn / 1 info`
-- Scheduled reports: partial; 08:00 and 13:30 BJT delivered, the 20:00 BJT report no longer looks like the main blocker, and the latest 22:00 BJT run failed by hitting the 600s response timeout, which points to an overweight report prompt rather than auth denial on that specific run
+- Cron engine: mixed but not stuck; `builder-a-night-feishu`, `main-night-supervisor`, and `watchdog-audit` remain disabled on the known provider `403` family, while `research-night-money`, `delivery-lead-track`, `monetization-track`, and `report-2000-bjt` are currently scheduler-healthy.
+- Security audit snapshot: hardening lane already landed earlier; rerun the deep audit only when the security queue returns to the top
+- Scheduled reports: partial; `report-2000-bjt` is back to `lastStatus: ok`, while `report-2200-bjt` is now the remaining unstable path and is failing by timeout rather than auth denial, which points to an overweight late-report prompt or insufficient timeout budget
 - Heartbeat: partial; main heartbeat exists, last heartbeat shows skipped
 - agent-reach stack: partially runnable from `/home/gaga/agent-reach-env` and improved to `10/15` channels after wiring `mcporter`, `xreach-cli` compatibility, container-backed `gh` and `ffmpeg`, Exa, XiaohongShu MCP, and Weibo MCP; remaining gaps need proxy, a Groq key, or extra platform servers
 - Image input: OK at tool level

@@ -10,6 +10,14 @@
 
 ## Active assignments
 
+## Supervisor pass - 2026-03-16 07:03 UTC
+
+- runtime re-verified from live CLI again, not the UI: `scripts/openclaw-live-cli.sh status --all`, `scripts/openclaw-live-cli.sh cron list --all --json`, and `scripts/openclaw-live-cli.sh agents list --bindings` all succeeded, so OpenClaw is responsive enough for control-plane work and no host self-repair path is needed
+- there is still no active child-owner drift to correct: `builder-a` stays replaced, `watchdog` stays completed, `research` stays completed, `builder-b` stays paused, `delivery-lead` stays replaced, and `monetization` stays completed; scheduler health alone still does not make any of them live owners
+- keep the parked provider-blocked worker jobs parked: `builder-a-night-feishu`, `watchdog-audit`, and `main-night-supervisor` are still disabled with the familiar provider `403` family, so do not reopen any worker lane on those cron states alone
+- the reporting blocker changed shape and should stop being described as a generic auth stall: `report-2000-bjt` is back to `lastStatus: ok`, while `report-2200-bjt` is enabled but currently failing by timing out before a response rather than by provider package denial
+- next control-plane step: keep child lanes idle, preserve `main` as the only current owner of active work, and narrow the late-report path separately if it stays too heavy instead of misclassifying it as a child-worker stall
+
 ## Supervisor pass - 2026-03-16 05:53 UTC
 
 - the user explicitly reprioritized the queue onto `English-study` closeout, so keep this lane in `main` instead of reopening any child worker on the same repo tree
