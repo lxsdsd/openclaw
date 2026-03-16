@@ -2,7 +2,8 @@
 
 ## Doing now
 
-- Close remaining skill activation gaps one by one: `tavily`, `self-improvement`, `github`, `find-skill`
+- Finish the English-study closeout in `main`: the delivery pack now exports to `projects/english-study/delivery/docx/`, and the remaining step is reviewing restored upstream files plus the local browser/shared-lib workaround before the second rollback commit
+- Close remaining skill activation gaps one by one: `github`
 - Maintain the local `skills/skill-vetting/` gate as the default pre-install review path
 - Compare and vet external skill-vetting candidates before any install
 - Maintain indexes and pitfall tracking so new files and lessons stay discoverable
@@ -14,11 +15,14 @@
 
 ## Recently resolved
 
+- English-study delivery packaging advanced: `projects/english-study/tools/export_delivery_docs.py` now exports the delivery pack and `projects/english-study/delivery/docx/` contains generated Word copies of the current docs
 - Local control clients reconnected after token rotation
 - Gateway token mismatch cleared
 - Feishu DM channel successfully paired and working
 - Skill visibility issue understood: runtime sees skills under `/home/node/.openclaw` and `/home/node/.openclaw/workspace`, not the earlier host-side repo path
 - `agent-reach` is installed and partially usable now (`doctor` shows about 7/15 channels available)
+- `tavily` is live with the newly added API key and the bundled search script returns results
+- `find-skill` has no runtime-visible install in the current workspace or OpenClaw skill roots, so it should be treated as not installed
 
 ## Needs user decision
 
@@ -59,8 +63,5 @@
 
 ## Next planned moves
 
-1. Verify `tavily` after the newly added API key and confirm live usability
-2. Initialize `.learnings/` for `self-improvement`
-3. Prompt for `gh auth` only if `github` is the next skill the user wants fully activated
-4. Confirm whether `find-skill` actually exists anywhere or treat it as not installed
-5. Retry metadata/file inspection for external skill-vetter candidates when rate limits clear
+1. Prompt for `gh auth` only if `github` is the next skill the user wants fully activated
+2. Retry metadata/file inspection for external skill-vetter candidates when rate limits clear

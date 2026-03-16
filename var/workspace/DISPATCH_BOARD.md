@@ -10,6 +10,14 @@
 
 ## Active assignments
 
+## Supervisor pass - 2026-03-16 05:53 UTC
+
+- the user explicitly reprioritized the queue onto `English-study` closeout, so keep this lane in `main` instead of reopening any child worker on the same repo tree
+- runtime state for this pass stayed clear enough that no self-repair path was needed; do not infer stuckness from UI lag when live shell work and delivery-file writes are succeeding
+- the next concrete closeout step is no longer “wait for Word tooling”: the local `doc-tools` venv already provides `python-docx`, so `main` should export the delivery pack to `projects/english-study/delivery/docx/`, update the test/deploy docs, and then reassess what remains before the second rollback commit
+- keep `builder-a`, `builder-b`, `watchdog`, `research`, `delivery-lead`, and `monetization` parked; scheduler health alone still does not make any of them live owners of this repo lane
+- after the delivery-pack export lands, update `STATUS_BOARD.md`, `EXECUTION_BOARD.md`, and `TODO_SHORT.md` so the remaining English-study closeout work is narrowed to upstream-file review plus rollback packaging, not generic doc cleanup
+
 ## Supervisor pass - 2026-03-13 12:55 UTC
 
 - runtime verified on `wsl-host`: gateway `127.0.0.1:18789` is healthy, Feishu is running, and `research` exists in the live agent config
