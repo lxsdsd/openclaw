@@ -13,6 +13,7 @@ Longer-running tracks, recurring capabilities, and durable backlog items that sh
 
 ## Active tracks
 
+- [P1] Research the best agent coordination model for this WSL + Docker OpenClaw setup, including when to use a serial pipeline vs bounded parallel workers, and define a concise proactive progress-reporting / todo-push workflow.
 - [P1] Build a real Feishu todo capture flow for `记录待办`, including inbox capture, assistant triage, editable priority, and todo viewing.
 - [P1] Establish a clean multi-project convention for separate code folders and task tracking.
 - [P1] Establish a structured backlog convention for future capability tracks.
