@@ -15,7 +15,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 - [P1] Slim or split the `report-2200-bjt` board-report prompt so the late report stops timing out; keep `report-2000-bjt` as the healthy reference path.
 - [P1] Keep the current `rightcode`-blocked worker jobs disabled until quota recovers or a different working model path is chosen; do not let them resume empty-spin.
-- [P1] Finish the last English-study closeout slice: continue from the new `web/dist` vs `web/src`, `core/static` shell-vs-sample, `annotation_templates` vs `core/examples`, and `sample-task-sin-headless.csv` gap classification, then decide which remaining upstream-restored `label_studio/` assets still need long-term retention.
+- [P1] Finish the last English-study closeout slice: continue from the new `web/dist` vs `web/src`, `core/static` shell-vs-sample, `annotation_templates` vs `core/examples`, and the now-closed `sample-task-sin-headless.csv` dead-reference finding, then decide which remaining upstream-restored `label_studio/` assets still need long-term retention.
 - [P1] Keep `projects/english-study/delivery/docx/` in sync with the Markdown delivery docs and spot-check layout edge cases after each export.
 - [P1] Check whether `github` should be fully activated next; if yes, prompt for `gh auth` and verify.
 - [P1] Confirm final reminder time for tomorrow's hiking pack/check reminder.
