@@ -24,6 +24,7 @@
 - English-study UI closeout advanced: visible task/error-page text is now localized, the polluted editor source was restored from source maps, and the stray compiled `static_build` JS edits were reverted out of the delivery scope
 - English-study docs are now more honest about repo roles: `用户指南.md` remains the in-repo Chinese operator guide, while untracked `roadmap.md` is treated as upstream historical context instead of a local delivery promise
 - English-study boundary docs now explicitly separate `web/dist` runtime bundles from `web/.../src` maintenance sources, and they split `label_studio/core/static/` into direct page-shell assets versus template/sample assets for follow-up review
+- English-study boundary review now also distinguishes runtime-coupled `label_studio/annotation_templates/` from more likely upstream-demo `label_studio/core/examples/`, based on the live `TemplateListAPI` scan path in `label_studio/projects/api.py`
 - Local control clients reconnected after token rotation
 - Gateway token mismatch cleared
 - Feishu DM channel successfully paired and working
