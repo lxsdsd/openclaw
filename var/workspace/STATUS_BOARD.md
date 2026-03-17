@@ -3,7 +3,7 @@
 ## Doing now
 
 - English-study closeout advanced again in `main`: the polluted `web/libs/editor/src/components/App/App.jsx` source was rebuilt from `web/dist/libs/editor/main.js.map`, the user-visible task/error-page text was localized, and the result is captured in commits `305a09d46` and `646152e0d`.
-- The stray `label_studio/core/static_build/*.js` compiled-asset churn has been pushed back out of scope by restoring those files to git baseline; the remaining English-study closeout work is now narrower and mostly about retained upstream-file boundaries, not frontend noise.
+- The stray `label_studio/core/static_build/*.js` compiled-asset churn has been pushed back out of scope by restoring those files to git baseline; the remaining English-study closeout work is now narrower and mostly about retained upstream-file boundaries, especially a file-level split inside `label_studio/core/static/` between page-shell assets and upstream sample/template assets.
 - The only tracked non-English-study change still left in the root worktree is `docker-compose.yml`, where `PLAYWRIGHT_BROWSERS_PATH` is now passed through to two services. Repo docs and `Dockerfile` support that knob, and because it defaults to empty it is currently a low-risk keep-or-drop decision rather than an urgent regression.
 - The smallest safe hardening step is no longer pending: live `/home/node/.openclaw/openclaw.json` permissions are now `600`, and the live deep audit dropped from `5 critical / 4 warn / 1 info` to `4 critical / 4 warn / 1 info`.
 - The `rightcode` provider blocker is contained for now: live cron state shows the known `403`-blocked worker jobs remain disabled, so there is no enabled empty-spin loop while waiting for quota recovery or a new model path.
@@ -23,6 +23,7 @@
 - English-study delivery packaging advanced: `projects/english-study/tools/export_delivery_docs.py` now exports the delivery pack and `projects/english-study/delivery/docx/` contains generated Word copies of the current docs
 - English-study UI closeout advanced: visible task/error-page text is now localized, the polluted editor source was restored from source maps, and the stray compiled `static_build` JS edits were reverted out of the delivery scope
 - English-study docs are now more honest about repo roles: `用户指南.md` remains the in-repo Chinese operator guide, while untracked `roadmap.md` is treated as upstream historical context instead of a local delivery promise
+- English-study boundary docs now explicitly separate `web/dist` runtime bundles from `web/.../src` maintenance sources, and they split `label_studio/core/static/` into direct page-shell assets versus template/sample assets for follow-up review
 - Local control clients reconnected after token rotation
 - Gateway token mismatch cleared
 - Feishu DM channel successfully paired and working
