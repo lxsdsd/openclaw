@@ -15,7 +15,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 - [P1] Slim or split the `report-2200-bjt` board-report prompt so the late report stops timing out; keep `report-2000-bjt` as the healthy reference path.
 - [P1] Keep the current `rightcode`-blocked worker jobs disabled until quota recovers or a different working model path is chosen; do not let them resume empty-spin.
-- [P1] Finish the English-study closeout pass: review which upstream-restored `label_studio/` and `web/` files should remain, decide how to handle the local `.aptlibs/` and `.playwright-browsers/` workaround, and prepare the second rollback commit.
+- [P1] Finish the last English-study closeout slice: review which upstream-restored `label_studio/` and `web/` files should remain long-term, and decide whether the optional `docker-compose.yml` `PLAYWRIGHT_BROWSERS_PATH` passthrough should be kept as documented runtime convenience or dropped for a cleaner default.
 - [P1] Keep `projects/english-study/delivery/docx/` in sync with the Markdown delivery docs and spot-check layout edge cases after each export.
 - [P1] Check whether `github` should be fully activated next; if yes, prompt for `gh auth` and verify.
 - [P1] Confirm final reminder time for tomorrow's hiking pack/check reminder.
@@ -27,6 +27,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 - [x] Kept child-lane ownership honest at the 2026-03-16 07:03 UTC supervisor pass: no child worker is currently active, the known provider-blocked worker crons remain intentionally disabled, and the late report problem is now tracked as a timeout-sizing issue rather than a generic worker stall.
 - [x] Tightened live `/home/node/.openclaw/openclaw.json` permissions from `755` to `600` and confirmed the deep audit dropped from `5 critical / 4 warn / 1 info` to `4 critical / 4 warn / 1 info`.
 - [x] Added `projects/english-study/tools/export_delivery_docs.py`, refreshed the English-study test/deploy docs, and generated Word copies under `projects/english-study/delivery/docx/`.
+- [x] Repaired the polluted English-study editor source from `web/dist/libs/editor/main.js.map`, re-localized the most visible UI/error-page text, and reverted the stray `label_studio/core/static_build/*.js` compiled-asset edits back to git baseline.
 - [x] Feishu DM channel paired and working.
 - [x] Gateway token mismatch cleared.
 - [x] Initialized `.learnings/` with `ERRORS.md`, `LEARNINGS.md`, and `FEATURE_REQUESTS.md`.
