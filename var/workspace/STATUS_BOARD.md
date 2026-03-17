@@ -29,6 +29,7 @@
 - English-study backend boundary review now also separates runtime-coupled Django apps from vague `label_studio/(other)` leftovers: `INSTALLED_APPS`, `core/urls.py`, and `server.py` confirm a concrete running set around users/projects/tasks/import/export/storage/ML/webhooks/labels
 - English-study top-level package review now also separates root runtime entry/config files (`manage.py`, `server.py`, `feature_flags.json`, `constants.py`) from test-only helpers (`tests/`, `pytest.ini`, `.coveragerc`, `sitecustomize.py`)
 - English-study `core/` review now also separates template runtime helpers (`core/templatetags/filters.py`) from version/diagnostic auxiliaries (`core/all_urls.json`, `core/version_.py`, `core/ls-version_.py`)
+- English-study `core/` top-level file review now also confirms most scattered Python files are runtime infrastructure rather than leftovers, based on live imports from settings, urls, server, and active apps
 - Local control clients reconnected after token rotation
 - Gateway token mismatch cleared
 - Feishu DM channel successfully paired and working
