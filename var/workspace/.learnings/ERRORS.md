@@ -294,3 +294,38 @@ Treat isolated `1000 normal closure` failures as transient until a second live p
 - Related Files: /home/gaga/openclaw/var/workspace/.learnings/ERRORS.md, /home/gaga/openclaw/var/workspace/EXECUTION_BOARD.md
 
 ---
+
+## [ERR-20260317-001] truncated-placeholder-text-written-into-real-files
+
+**Logged**: 2026-03-17T01:05:00Z
+**Priority**: medium
+**Status**: pending
+**Area**: workspace-editing
+
+### Summary
+
+A read/edit path allowed placeholder truncation text like `[94 more lines in file. Use offset=221 to continue.]` to end up inside real workspace files, which broke source files and Markdown docs.
+
+### Error
+
+```text
+[94 more lines in file. Use offset=221 to continue.]
+[153 more lines in file. Use offset=201 to continue.]
+```
+
+### Context
+
+- Affected files included `projects/english-study/repo/web/libs/editor/src/components/App/App.jsx` and `projects/english-study/repo/用户指南.md`
+- The safe recovery path was to trust the real filesystem, search for the placeholder pattern with `rg`, and rebuild damaged files from source maps or other canonical artifacts instead of continuing to edit the truncated file
+- This presented as injected/read-view content diverging from the actual file on disk
+
+### Suggested Fix
+
+Before editing a large file that may have been truncated in a tool view, verify the real on-disk content first. If placeholder truncation text is present in a source file, recover from a canonical source such as a source map, prior commit, or generated artifact before making further edits.
+
+### Metadata
+
+- Reproducible: unknown
+- Related Files: /home/gaga/openclaw/var/workspace/.learnings/ERRORS.md, /home/gaga/openclaw/var/workspace/projects/english-study/repo/web/libs/editor/src/components/App/App.jsx, /home/gaga/openclaw/var/workspace/projects/english-study/repo/用户指南.md
+
+---
