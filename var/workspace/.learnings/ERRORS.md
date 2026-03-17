@@ -329,3 +329,72 @@ Before editing a large file that may have been truncated in a tool view, verify 
 - Related Files: /home/gaga/openclaw/var/workspace/.learnings/ERRORS.md, /home/gaga/openclaw/var/workspace/projects/english-study/repo/web/libs/editor/src/components/App/App.jsx, /home/gaga/openclaw/var/workspace/projects/english-study/repo/用户指南.md
 
 ---
+
+## [ERR-20260317-002] wrong-openclaw-live-cli-script-path
+
+**Logged**: 2026-03-17T02:08:00Z
+**Priority**: low
+**Status**: pending
+**Area**: infra
+
+### Summary
+
+I retried live OpenClaw CLI probes with the old root-level script path, but this workspace uses `var/workspace/scripts/openclaw-live-cli.sh` instead.
+
+### Error
+
+```text
+/bin/sh: 1: scripts/openclaw-live-cli.sh: not found
+/bin/sh: 1: /home/gaga/openclaw/scripts/openclaw-live-cli.sh: not found
+```
+
+### Context
+
+- Command/operation attempted: runtime verification during supervisor-state follow-up
+- The working script path discovered on disk was `/home/gaga/openclaw/var/workspace/scripts/openclaw-live-cli.sh`
+- The failure was not a runtime outage; it was a stale path assumption in the command itself
+
+### Suggested Fix
+
+When running live OpenClaw CLI probes from this workspace, prefer `/home/gaga/openclaw/var/workspace/scripts/openclaw-live-cli.sh` or resolve the script with `find`/`rg` first instead of assuming a root-level `scripts/` path.
+
+### Metadata
+
+- Reproducible: yes
+- Related Files: /home/gaga/openclaw/var/workspace/.learnings/ERRORS.md, /home/gaga/openclaw/var/workspace/TOOLS.md
+- See Also: ERR-20260316-003
+
+---
+
+## [ERR-20260317-003] export-delivery-docs-missing-python-docx
+
+**Logged**: 2026-03-17T02:09:30Z
+**Priority**: low
+**Status**: pending
+**Area**: docs
+
+### Summary
+
+The delivery doc export script failed under the default system Python because `python-docx` is not installed there.
+
+### Error
+
+```text
+ModuleNotFoundError: No module named 'docx'
+```
+
+### Context
+
+- Command/operation attempted: `python3 /home/gaga/openclaw/var/workspace/projects/english-study/tools/export_delivery_docs.py`
+- The next safe fallback is to retry with the project-local virtualenv before considering any package install
+
+### Suggested Fix
+
+Run the export script with the project virtualenv that already carries doc-generation dependencies, or document that `python-docx` is a prerequisite for this helper.
+
+### Metadata
+
+- Reproducible: yes
+- Related Files: /home/gaga/openclaw/var/workspace/.learnings/ERRORS.md, /home/gaga/openclaw/var/workspace/projects/english-study/tools/export_delivery_docs.py
+
+---
