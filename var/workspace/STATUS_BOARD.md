@@ -28,6 +28,7 @@
 - English-study sample-asset review is now finer-grained: most `core/static/templates/*.png` files are still template-cover assets, the 6 unmatched covers currently have no live refs outside `staticfiles.json`, `core/static/samples/` splits into direct-template samples vs backend sample-endpoint assets vs weaker test/example-only files, and `sample-task-sin-headless.csv` has been downgraded from “possible missing asset” to an upstream dead reference shared with the SDK example bundle
 - English-study backend boundary review now also separates runtime-coupled Django apps from vague `label_studio/(other)` leftovers: `INSTALLED_APPS`, `core/urls.py`, and `server.py` confirm a concrete running set around users/projects/tasks/import/export/storage/ML/webhooks/labels
 - English-study top-level package review now also separates root runtime entry/config files (`manage.py`, `server.py`, `feature_flags.json`, `constants.py`) from test-only helpers (`tests/`, `pytest.ini`, `.coveragerc`, `sitecustomize.py`)
+- English-study `core/` review now also separates template runtime helpers (`core/templatetags/filters.py`) from version/diagnostic auxiliaries (`core/all_urls.json`, `core/version_.py`, `core/ls-version_.py`)
 - Local control clients reconnected after token rotation
 - Gateway token mismatch cleared
 - Feishu DM channel successfully paired and working
