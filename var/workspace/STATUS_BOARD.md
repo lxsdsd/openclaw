@@ -26,6 +26,7 @@
 - English-study boundary docs now explicitly separate `web/dist` runtime bundles from `web/.../src` maintenance sources, and they split `label_studio/core/static/` into direct page-shell assets versus template/sample assets for follow-up review
 - English-study boundary review now also distinguishes runtime-coupled `label_studio/annotation_templates/` from more likely upstream-demo `label_studio/core/examples/`, based on the live `TemplateListAPI` scan path in `label_studio/projects/api.py`
 - English-study sample-asset review is now finer-grained: most `core/static/templates/*.png` files are still template-cover assets, the 6 unmatched covers currently have no live refs outside `staticfiles.json`, `core/static/samples/` splits into direct-template samples vs backend sample-endpoint assets vs weaker test/example-only files, and `sample-task-sin-headless.csv` has been downgraded from “possible missing asset” to an upstream dead reference shared with the SDK example bundle
+- English-study backend boundary review now also separates runtime-coupled Django apps from vague `label_studio/(other)` leftovers: `INSTALLED_APPS`, `core/urls.py`, and `server.py` confirm a concrete running set around users/projects/tasks/import/export/storage/ML/webhooks/labels
 - Local control clients reconnected after token rotation
 - Gateway token mismatch cleared
 - Feishu DM channel successfully paired and working
