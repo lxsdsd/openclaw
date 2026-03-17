@@ -22,6 +22,7 @@
 
 - English-study delivery packaging advanced: `projects/english-study/tools/export_delivery_docs.py` now exports the delivery pack and `projects/english-study/delivery/docx/` contains generated Word copies of the current docs
 - English-study UI closeout advanced: visible task/error-page text is now localized, the polluted editor source was restored from source maps, and the stray compiled `static_build` JS edits were reverted out of the delivery scope
+- English-study docs are now more honest about repo roles: `用户指南.md` remains the in-repo Chinese operator guide, while untracked `roadmap.md` is treated as upstream historical context instead of a local delivery promise
 - Local control clients reconnected after token rotation
 - Gateway token mismatch cleared
 - Feishu DM channel successfully paired and working
