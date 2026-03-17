@@ -25,6 +25,7 @@
 - English-study docs are now more honest about repo roles: `用户指南.md` remains the in-repo Chinese operator guide, while untracked `roadmap.md` is treated as upstream historical context instead of a local delivery promise
 - English-study boundary docs now explicitly separate `web/dist` runtime bundles from `web/.../src` maintenance sources, and they split `label_studio/core/static/` into direct page-shell assets versus template/sample assets for follow-up review
 - English-study boundary review now also distinguishes runtime-coupled `label_studio/annotation_templates/` from more likely upstream-demo `label_studio/core/examples/`, based on the live `TemplateListAPI` scan path in `label_studio/projects/api.py`
+- English-study sample-asset review is now finer-grained: most `core/static/templates/*.png` files are still template-cover assets, `core/static/samples/` splits into direct-template samples vs backend sample-endpoint assets vs weaker test/example-only files, and `sample-task-sin-headless.csv` is now tracked as a likely upstream sample-chain gap rather than silently assumed required
 - Local control clients reconnected after token rotation
 - Gateway token mismatch cleared
 - Feishu DM channel successfully paired and working
