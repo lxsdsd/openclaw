@@ -469,3 +469,40 @@ Always quote `rg` patterns that contain `|`, parentheses, or other shell metacha
 - Related Files: .learnings/ERRORS.md
 
 ---
+
+---
+
+## [ERR-20260318-004] sed-json-strip-parse-failed
+
+**Logged**: 2026-03-18T08:12:46Z
+**Priority**: low
+**Status**: pending
+**Area**: tooling
+
+### Summary
+
+A read-only verification helper tried to strip plugin-noise lines before JSON parsing with a `sed` address form that was not accepted in this shell environment, so the device-pairing JSON parse failed.
+
+### Error
+
+```text
+PARSE_FAILED
+sed: -e expression #1, char 5: unexpected `,'
+```
+
+### Context
+
+- Command attempted: parse `openclaw devices list --json` output from the gateway container after plugin log noise
+- Trigger: checking whether pending `openclaw-control-ui` pairing requests were fully cleared
+- Environment: host shell + docker exec pipeline
+
+### Suggested Fix
+
+Avoid shell-specific `sed` address tricks when stripping preamble noise; prefer extracting from the first `{` with Python or use a portable `awk`/`perl` filter before JSON parsing.
+
+### Metadata
+
+- Reproducible: yes
+- Related Files: .learnings/ERRORS.md
+
+---
