@@ -41,6 +41,40 @@ Document `find`/shell fallbacks for environments where `rg` is unavailable and a
 
 ---
 
+## [ERR-20260318-002] shell-python-missing
+
+**Logged**: 2026-03-18T04:57:19Z
+**Priority**: low
+**Status**: pending
+**Area**: infra
+
+### Summary
+
+A quick workspace helper used `python`, but this runtime only exposes `python3`, so the command failed before the real check ran.
+
+### Error
+
+```text
+/bin/sh: 1: python: not found
+```
+
+### Context
+
+- Command attempted: inline Python helper for summarizing child assignment statuses
+- Trigger: checking live assignment state during a supervisor pass
+- Environment: OpenClaw workspace shell on WSL2 container
+
+### Suggested Fix
+
+Default to `python3` for inline scripts in this runtime, or probe the interpreter first instead of assuming `python` exists.
+
+### Metadata
+
+- Reproducible: yes
+- Related Files: .learnings/ERRORS.md
+
+---
+
 ## [ERR-20260313-001] pnpm-vitest-missing-in-extension
 
 **Logged**: 2026-03-13T04:53:00Z
