@@ -432,3 +432,40 @@ Run the export script with the project virtualenv that already carries doc-gener
 - Related Files: /home/gaga/openclaw/var/workspace/.learnings/ERRORS.md, /home/gaga/openclaw/var/workspace/projects/english-study/tools/export_delivery_docs.py
 
 ---
+
+---
+
+## [ERR-20260318-003] shell-rg-pattern-pipe-splitting
+
+**Logged**: 2026-03-18T06:41:04Z
+**Priority**: low
+**Status**: pending
+**Area**: tooling
+
+### Summary
+
+A self-check shell helper passed `rg` patterns containing `|` without robust quoting, so `/bin/sh` treated part of the pattern as a pipeline and the probe failed.
+
+### Error
+
+```text
+/bin/sh: ... rg screenshot-ocr: not found
+/bin/sh: ... rg /ontology/: not found
+```
+
+### Context
+
+- Command attempted: skill discovery during capability self-test
+- Trigger: checking OCR and ontology-related skill presence
+- Environment: shell snippet executed through `bash -lc`, but unsafe unquoted pattern text still broke parsing
+
+### Suggested Fix
+
+Always quote `rg` patterns that contain `|`, parentheses, or other shell metacharacters inside inline shell scripts; prefer assigning the search output to a variable before branching.
+
+### Metadata
+
+- Reproducible: yes
+- Related Files: .learnings/ERRORS.md
+
+---
