@@ -10,6 +10,14 @@
 
 ## Active assignments
 
+## Supervisor pass - 2026-03-18 04:56 UTC
+
+- runtime re-verified from live CLI first, not the UI: `scripts/openclaw-live-cli.sh status --all` and `scripts/openclaw-live-cli.sh cron list --all --json` both succeeded, the gateway stayed reachable on loopback, and Feishu still probes healthy, so OpenClaw does not look stuck and no node-host self-repair path is needed
+- there is still no active child worker to rescue or reroute, and that conclusion is now based on the live workspace files plus CLI state instead of injected context: `builder-a` is `paused`, `builder-b` is `completed`, `watchdog` is `completed`, `research` is `completed`, `delivery-lead` is `completed`, and `monetization` is `completed`
+- corrected board drift from the earlier notes that described newer child states than the live assignment files on disk; the queue is still idle, but the stale labels could mislead the next supervision pass about who owns work
+- current runtime drift is historical error residue, not a live stalled worker: disabled jobs like `builder-a-night-feishu`, `watchdog-audit`, `main-night-supervisor`, `delivery-lead-track`, `monetization-track`, `report-2000-bjt`, and `report-2200-bjt` still carry old provider-side `403 "API Key 不允许使用余额且无可用套餐"` last-status fields, but they are disabled and do not currently own active lanes
+- next control-plane step: leave child lanes idle until a new explicit assignment opens; if the security lane returns to the top of the queue, open one narrow hardening pass for `/home/node/.openclaw/openclaw.json` permissions (`755` -> `600`) from `SECURITY_TODO.md`, otherwise keep the parked worker/report jobs disabled until a working model path or quota headroom returns
+
 ## Supervisor pass - 2026-03-16 14:15 UTC
 
 - runtime rechecked from live CLI again, not the UI: `scripts/openclaw-live-cli.sh status --all`, `scripts/openclaw-live-cli.sh cron list --all --json`, and `scripts/openclaw-live-cli.sh agents list --bindings` all still succeeded, so OpenClaw does not look stuck and no host self-repair path is needed
