@@ -18,7 +18,7 @@
 - Every future skill install or update should go through a security vetting step first.
 - Keep a clear index for skills and important Markdown files.
 - Record pitfalls and near-misses so the same mistake is not repeated.
-- Proactively notify the user when a meaningful security issue or likely-cost risk is discovered.
+- Proactively notify the user when a meaningful security issue, likely-cost risk, or official OpenClaw update is discovered.
 - When unsure about process or standards, check current best practices instead of improvising.
 - If better outcomes require budget, say so explicitly rather than silently working around it.
 - When there are runnable todos, keep working without waiting for repeated 'continue' messages.
