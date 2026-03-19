@@ -83,7 +83,7 @@ Use it as the shared source of truth for:
 - Owner: `research`
 - Status: completed
 - Goal: preserve the accepted live `openclaw security audit --deep --json` triage handoff
-- Next step: none; the ranked handoff is complete in `agents/research/STATUS.md` and `SECURITY_TODO.md`
+- Next step: none; the ranked handoff is complete in `agents/research/STATUS.md` and `SECURITY_TODO.md`, and the stray `research-night-money` cron is parked again after runtime drift re-enabled it on a closed lane
 
 ### Lane F - Blocked integrations
 

@@ -10,6 +10,14 @@
 
 ## Active assignments
 
+## Supervisor pass - 2026-03-19 04:27 UTC
+
+- runtime re-verified from live CLI first, not the UI: `scripts/openclaw-live-cli.sh status --all` succeeded, gateway loopback stayed reachable, and a targeted `cron list --all --json` recheck confirmed current scheduler truth; one follow-up `cron list` hit a transient `1000 normal closure` and recovered on immediate retry, so OpenClaw does not look stuck and no node-host self-repair path is needed
+- no child worker currently qualifies as an active owner: `builder-a` stays `replaced`, `builder-b` stays `paused`, `watchdog` stays `completed`, `research` stays `completed`, `delivery-lead` stays `replaced`, and `monetization` stays `completed` in file-backed assignment state
+- corrected live runtime drift instead of trusting the older board note: `research-night-money` had been re-enabled even though `agents/research/ASSIGNMENT.md` is `completed`, and it was repeating provider auth failures as `403 "API Key 已被禁用"`; that cron job is now disabled again so the closed `research` lane stops waking on an unowned retry loop
+- the remaining disabled auth-failing jobs stay intentionally parked: `builder-a-night-feishu`, `watchdog-audit`, `main-night-supervisor`, `delivery-lead-track`, `monetization-track`, `report-2000-bjt`, and `report-2200-bjt` still do not own active child lanes and should not be treated as implementation stalls
+- next control-plane step: leave child lanes idle until a new explicit assignment opens; when security hardening returns to the top of the queue, reopen only the narrow `/home/node/.openclaw/openclaw.json` permission fix from `SECURITY_TODO.md`
+
 ## Supervisor pass - 2026-03-18 04:56 UTC
 
 - runtime re-verified from live CLI first, not the UI: `scripts/openclaw-live-cli.sh status --all` and `scripts/openclaw-live-cli.sh cron list --all --json` both succeeded, the gateway stayed reachable on loopback, and Feishu still probes healthy, so OpenClaw does not look stuck and no node-host self-repair path is needed
