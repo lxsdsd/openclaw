@@ -175,6 +175,22 @@ Operational rule:
   - default output is on `D:` to avoid `C:` pressure
   - root `.env` is excluded by default
   - supported encryption modes are GPG recipient encryption and symmetric encryption with a passphrase file
+
+### Root repo upstream tracking aligned with actual cloud backup branch
+
+- Confirmed there were zero local commits missing from all remotes across:
+  - product repo
+  - assistant-state backup repo
+  - English study repo
+- Root cause of the “still so many local git versions” view was branch comparison, not missing pushes:
+  - root `main` had been comparing against `origin/main`
+  - the actual cloud home for local runtime/tooling backup commits is `userfork/codex-runtime-backup-20260320`
+- Updated local tracking so root `main` now tracks `userfork/codex-runtime-backup-20260320`
+
+Validation:
+
+- `git log --branches --not --remotes` returns zero commits in all three repos
+- `git branch -vv` for root repo now shows `main` tracking `userfork/codex-runtime-backup-20260320`
 - copied current cookies from existing container into host file
 - recreated `xiaohongshu-mcp` under compose with bind-mounted cookie storage
 

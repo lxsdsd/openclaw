@@ -93,6 +93,13 @@ Future sessions must not mix these three during commit or cleanup work.
   - English study repo contains the cleaned project history state
 - Future sessions should treat “clean root `git status`” as a local operator convenience only, not as proof that runtime state has been backed up; backup truth still lives in the three canonical repos plus the D-drive snapshot path
 
+### Git history visibility clarification
+
+- A later audit confirmed all three repos currently have `0` commits that exist only locally and on no remote
+- The confusing part was not missing pushes; it was the root repo tracking target
+- Root `main` now tracks `userfork/codex-runtime-backup-20260320`
+- This should reduce IDE confusion where already-pushed local runtime/tooling commits looked like unpushed divergence only because the comparison target was still `origin/main`
+
 ### Sensitive migration path improved
 
 - Added encrypted secret-state backup scaffolding at:

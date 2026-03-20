@@ -78,6 +78,18 @@ Read this before attempting repair, restart, update, pairing, agent recovery, or
 - Reverse path:
   - if a future repair session needs the raw root-repo view again, run `scripts/clear-local-runtime-git-hygiene.sh`
 
+## Root repo history comparison rule
+
+- Root repo local backup commits are currently anchored to `userfork/codex-runtime-backup-20260320`, not to `origin/main`
+- Therefore:
+  - many commits visible in the IDE history does not imply they are still local-only
+  - comparing root `main` to `origin/main` will overstate divergence and confuse backup status
+- First check:
+  - `git log --branches --not --remotes`
+  - if that is empty, the commits are already on some remote
+- Current intended tracking for root repo:
+  - local `main` -> `userfork/codex-runtime-backup-20260320`
+
 ## Do not infer the wrong root
 
 Treat these as non-canonical unless a human explicitly tells you otherwise:
