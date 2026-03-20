@@ -44,6 +44,40 @@ Read this before attempting repair, restart, update, pairing, agent recovery, or
   - secret-bearing runtime state -> mounted persistent paths plus D-drive snapshots
 - If encrypted cloud backup is required later, add a dedicated encrypted backup workflow instead of committing raw secret-bearing files into the code repos
 
+### Encrypted backup workflow now scaffolded
+
+- Backup script: `scripts/backup-sensitive-runtime-state.sh`
+- Restore script: `scripts/restore-sensitive-runtime-state.sh`
+- Default design:
+  - encrypted archive goes to `/mnt/d/OpenClaw/encrypted-backups`
+  - temp work stays on `/mnt/d/OpenClaw/tmp`
+  - root `.env` is excluded by default to keep secret handling minimal
+- Supported modes:
+  - GPG recipient encryption with `--recipient <key-id-or-email>`
+  - symmetric encryption with `--symmetric --passphrase-file <file>`
+- Included paths by default:
+  - `var/config/devices`
+  - `var/config/identity`
+  - `var/config/gh`
+  - `var/config/credentials`
+  - `var/xiaohongshu-mcp/cookies.json`
+  - `var/qmd-memory-service/.env`
+- Optional:
+  - add `--include-root-env` only when a deliberate encrypted backup of root `.env` is actually needed
+
+## Root repo fake-dirty rule
+
+- On this machine, a noisy root `git status` often means the product repo is seeing live runtime paths that belong to the running stack, not that product code is missing cloud backup
+- Short version:
+  - `git status` noisy != product repo unbacked
+  - it often just means the wrong repo is observing the files
+- First response:
+  1. check whether the files are under `var/workspace`, `var/config`, `var/qmd-memory-service`, or `var/xiaohongshu-mcp`
+  2. decide which canonical repo or persistence bucket owns them
+  3. if this is only root-repo visibility noise, run `scripts/apply-local-runtime-git-hygiene.sh`
+- Reverse path:
+  - if a future repair session needs the raw root-repo view again, run `scripts/clear-local-runtime-git-hygiene.sh`
+
 ## Do not infer the wrong root
 
 Treat these as non-canonical unless a human explicitly tells you otherwise:

@@ -134,6 +134,47 @@ Validation:
 
 - `assistant-state-backup/save-point.sh` completed a fresh sync pass
 - backup repo was already up to date after sync, so no additional runtime delta was left uncommitted there
+
+### Root repo fake-dirty noise was reduced without touching runtime state
+
+- Confirmed that the root repo `git status` noise was coming primarily from `var/workspace`, `var/config`, `var/qmd-memory-service`, and `var/xiaohongshu-mcp`
+- Confirmed that this did **not** mean the product repo still had large amounts of unpushed product code
+- Added two local-only git hygiene helpers:
+  - `scripts/apply-local-runtime-git-hygiene.sh`
+  - `scripts/clear-local-runtime-git-hygiene.sh`
+- The apply script:
+  - adds local excludes for runtime-state paths under `var/`
+  - marks tracked `var/workspace` files as `skip-worktree`
+  - leaves runtime files untouched
+- The clear script removes the local-only hygiene rules and restores normal git visibility
+
+Validation:
+
+- after applying the hygiene script, root repo `git status` dropped from dozens of runtime-state entries to clean
+- helper scripts were committed and pushed to `userfork/codex-runtime-backup-20260320`
+
+### Cloud backup state re-verified
+
+- Product/tooling backup branch tip now includes the local git hygiene helpers
+- Assistant runtime backup repo tip now includes the updated handoff rules
+- English study repo tip now includes removal of the stale `.git.broken-20260319-1916/config` tracked reference
+
+Operational rule:
+
+- if root repo `git status` explodes again after a fresh clone or reset, re-run `scripts/apply-local-runtime-git-hygiene.sh` before assuming data is missing from cloud backup
+
+### Encrypted secret-state backup scaffolding added
+
+- Added:
+  - `scripts/backup-sensitive-runtime-state.sh`
+  - `scripts/restore-sensitive-runtime-state.sh`
+- Purpose:
+  - create encrypted migration backups for secret-bearing runtime state
+  - restore those backups back into the canonical repo root when needed
+- Current design choices:
+  - default output is on `D:` to avoid `C:` pressure
+  - root `.env` is excluded by default
+  - supported encryption modes are GPG recipient encryption and symmetric encryption with a passphrase file
 - copied current cookies from existing container into host file
 - recreated `xiaohongshu-mcp` under compose with bind-mounted cookie storage
 

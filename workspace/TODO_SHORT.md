@@ -13,8 +13,8 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 ## Active
 
-- [P1] Finish the repo split cleanup: recovery history is now pushed to the correct cloud repos/branches, and the preserved `assistant-state-backup/config/openclaw.json` tool-allowlist change now needs to be carried into the clean long-term branch/default-branch shape so future work lands in the right repo by default.
 - [P1] Restore live local-control visibility by fixing the `operator.read` path that keeps `openclaw status --all`, deep probes, and live scheduler inspection from using the cached operator device auth.
+- [P1] Add and validate an encrypted backup path for secret-bearing runtime state (`devices`, `identity`, `gh`, `credentials`, cookies, and secret env files) so migration does not depend only on local mounts plus D-drive snapshots.
 - [P1] Reconcile reporting state: the live cron store is empty, so `report-2000-bjt` / `report-2200-bjt` are currently a scheduler-truth audit/rebuild task, not just a prompt-sizing task.
 - [P1] Keep the current `rightcode`-blocked worker jobs disabled until quota recovers or a different working model path is chosen; do not let them resume empty-spin.
 

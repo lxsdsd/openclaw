@@ -77,6 +77,31 @@ Future sessions must not mix these three during commit or cleanup work.
   - D-drive snapshot created before cleanup
 - If future policy requires cloud backup for these paths, use encryption first; do not normalize raw-secret commits into the normal git repos
 
+### What future sessions must remember from this pass
+
+- The root repo was not “missing lots of uploads”; it was showing mixed visibility across:
+  - product repo files
+  - runtime workspace state
+  - nested project repos
+  - secret-bearing persistence paths
+- That visibility problem is now locally suppressed by:
+  - `scripts/apply-local-runtime-git-hygiene.sh`
+  - `scripts/clear-local-runtime-git-hygiene.sh`
+- Current cloud anchors after this pass:
+  - product/tooling backup branch contains the hygiene helpers
+  - assistant backup repo contains the updated handoff notes
+  - English study repo contains the cleaned project history state
+- Future sessions should treat “clean root `git status`” as a local operator convenience only, not as proof that runtime state has been backed up; backup truth still lives in the three canonical repos plus the D-drive snapshot path
+
+### Sensitive migration path improved
+
+- Added encrypted secret-state backup scaffolding at:
+  - `../../scripts/backup-sensitive-runtime-state.sh`
+  - `../../scripts/restore-sensitive-runtime-state.sh`
+- This is the correct next layer above “mounted persistence + D-drive snapshots”
+- It is intended for migration and disaster recovery of secret-bearing runtime state without pushing raw auth material into the normal git repos
+- Default archive target is on `D:`, not the pressure-constrained `C:`
+
 ### Cleanup findings from this pass
 
 - The highest-risk reclaim target for `C:` was Docker build cache, not OpenClaw live state
