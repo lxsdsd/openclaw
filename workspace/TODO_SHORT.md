@@ -20,6 +20,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 ## Done recently
 
+- [x] Closed the main repo-boundary/default-branch cleanup: `lxsdsd/openclaw` now defaults to `workspace-main`, `lxsdsd/English_study` defaults to `main`, and the local working branches track those long-term upstreams (`assistant-state-backup` `main` -> `origin/workspace-main`, `projects/english-study/repo` `main` -> `origin/main`), so future work now lands in the correct repo by default.
 - [x] Finalized the `tavily-search` disposition: keep it as a reviewed local skill / accepted remote-API exception rather than an unresolved high-risk unknown; it remains bounded to Tavily official endpoints and still does not bypass the normal skill-vetting gate for any new skill.
 - [x] Realigned `SECURITY_TODO.md` to live state: `gateway.bind` is tracked again as unresolved (`lan` -> loopback still pending), Feishu inbound hardening is marked done, and the local CLI `operator.read` credential-selection bug is now tracked explicitly.
 - [x] Verified GitHub auth/push path is healthy again: `gh auth status` logs into `lxsdsd`, private repo access works, and `git push --dry-run` now reaches the remote and fails only on non-fast-forward state instead of auth.

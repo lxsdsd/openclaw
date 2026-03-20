@@ -62,6 +62,21 @@ Future sessions must not mix these three during commit or cleanup work.
   - product code / scripts / compose / Dockerfiles -> product repo
 - A fresh `assistant-state-backup/save-point.sh` sync confirmed the assistant backup repo already contains the current runtime notes and learnings from this pass
 
+### Secret-bearing state is not part of code-repo backup
+
+- Directory-structure review re-confirmed that some persistent paths are auth-bearing by nature:
+  - `var/config/devices`
+  - `var/config/identity`
+  - `var/config/gh`
+  - `var/config/credentials`
+  - `var/xiaohongshu-mcp/cookies.json`
+  - `var/qmd-memory-service/.env`
+- These paths were intentionally not pushed into the git backup repos during this pass
+- Current recovery coverage for them is:
+  - canonical bind-mounted persistence under `var/`
+  - D-drive snapshot created before cleanup
+- If future policy requires cloud backup for these paths, use encryption first; do not normalize raw-secret commits into the normal git repos
+
 ### Cleanup findings from this pass
 
 - The highest-risk reclaim target for `C:` was Docker build cache, not OpenClaw live state

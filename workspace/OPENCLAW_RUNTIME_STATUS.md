@@ -28,6 +28,22 @@ Read this before attempting repair, restart, update, pairing, agent recovery, or
   - English study project history
 - Only create a new repo if an artifact set has durable value and still fits none of the three boundaries above
 
+## Secret-bearing persistence boundaries
+
+- Not every persistent path should be pushed into a git remote
+- These paths can contain live pairing state, auth state, or cookies and must be treated as secret-bearing:
+  - `var/config/devices`
+  - `var/config/identity`
+  - `var/config/gh`
+  - `var/config/credentials`
+  - `var/xiaohongshu-mcp/cookies.json`
+  - `var/qmd-memory-service/.env`
+- Current safe posture on this machine:
+  - non-secret runtime notes and workspace state -> assistant backup repo
+  - project artifacts -> project repo
+  - secret-bearing runtime state -> mounted persistent paths plus D-drive snapshots
+- If encrypted cloud backup is required later, add a dedicated encrypted backup workflow instead of committing raw secret-bearing files into the code repos
+
 ## Do not infer the wrong root
 
 Treat these as non-canonical unless a human explicitly tells you otherwise:
