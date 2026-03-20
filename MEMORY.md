@@ -72,9 +72,32 @@
 ## GitHub
 
 - GitHub username: `lxsdsd`
-- Two repos: `lxsdsd/openclaw` (OpenClaw 配置/工作区迁移) and `lxsdsd/English_study` (英语学习项目)
-- PAT name: "bobo", repo scope, expires Jun 11 2026
-- Token value still needs to be configured into the environment (`GITHUB_TOKEN` is currently empty)
+- PAT name: "bobo", repo+admin:org+workflow scope, expires Jun 11 2026
+- GITHUB_TOKEN 已配置在 .env 中，Docker 容器内可用，gh auth 正常，git push 正常。不要再问用户是否配置了。
+
+### 仓库清单
+
+1. **lxsdsd/openclaw**（public）— OpenClaw 配置、workspace、skills、记忆等可迁移部分
+   - `workspace-main`（默认分支）：旧嵌套结构（assistant-state-backup），待废弃
+   - `workspace-main-v2`：新扁平 workspace 结构，2026-03-21 推送。应切为默认分支。
+   - 其余大量分支是 fork 上游的，不是我们的。
+
+2. **lxsdsd/English_study**（private）— 英语学习项目（Label Studio 汉化 + 音频标注）
+   - `main`：混入了 workspace recovery 提交，需要清理
+   - `label-studio-2026-03-13`：项目最后一次正式同步
+   - `recovered-mixed-history-20260319` / `workspace-recovery-20260319`：恢复用临时分支
+   - 项目未收尾，需要一个干净的专用分支继续开发
+   - 本地当前无 checkout
+
+3. **lxsdsd/openclaw-disk-cleanup-skill**（public）— disk-cleanup 技能，独立仓库，干净
+
+4. **lxsdsd/Cc_jia**（public）— 2016 旧项目，无关
+
+### 仓库待办
+- [ ] openclaw 默认分支切到 `workspace-main-v2`
+- [ ] English_study 从 `label-studio-2026-03-13` 拉一个干净的开发分支继续项目
+- [ ] English_study main 清理混入的 workspace recovery 提交
+- [ ] 未来新技能应各自独立仓库（参考 openclaw-disk-cleanup-skill）
 
 ## Multi-agent preference
 

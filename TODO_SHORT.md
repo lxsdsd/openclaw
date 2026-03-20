@@ -14,11 +14,11 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 ## Active
 
 - [x] ~~[P1] Tighten agent tool profiles per security audit~~ — tools.deny 已配置并验证生效。
-- [P1] Add and validate an encrypted backup path for secret-bearing runtime state (`devices`, `identity`, `gh`, `credentials`, cookies, and secret env files) so migration does not depend only on local mounts plus D-drive snapshots.
-- [P1] Keep the current `rightcode`-blocked worker jobs disabled until quota recovers or a different working model path is chosen; do not let them resume empty-spin.
-- [P1] Fixate `OPENCLAW_GATEWAY_TOKEN` + `OPENCLAW_GATEWAY_PORT=18789` into wsl-host `~/.bashrc` for host CLI convenience.
+- [x] ~~[P1] Encrypted backup path for secret-bearing runtime state~~ — 备份/恢复脚本已部署到 wsl-host ~/bin/，存储到 D:/openclaw-backups/secrets/，AES-256 加密，保留最近 5 份。用户需设置 BACKUP_PASSPHRASE。
+- [x] ~~[P1] Keep rightcode-blocked worker jobs disabled~~ — 已确认无残留 worker jobs，仅剩 3 个正常 cron（日报x2 + 磁盘检查）。
+- [x] ~~[P1] Fixate OPENCLAW_GATEWAY_TOKEN + OPENCLAW_GATEWAY_PORT=18789 into wsl-host ~/.bashrc~~ — 已写入。
 - [P2] Multi-agent parallel execution validation — run a real parallel dispatch test.
-- [P2] Workspace git commit + push for today's changes.
+- [x] ~~Workspace git commit + push for today's changes~~ — pushed to `workspace-main-v2` on lxsdsd/openclaw。
 
 ## Blocked (needs user)
 

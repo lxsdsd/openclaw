@@ -15,7 +15,9 @@ Keep this list short and actionable. Move items out as soon as they are resolved
   ```
   预计可回收 20-40G。
 - [P1] When convenient, do one full Docker Desktop stop/start test and confirm OpenClaw still opens the same state after Windows-side restart.
-- [P1] Choose the first encrypted secret-backup mode for migration: either a GPG recipient key or a symmetric passphrase-file workflow.
+- [P1] **设置加密备份密码**：在 wsl-host 的 `~/.bashrc` 中添加 `export BACKUP_PASSPHRASE='你的强密码'`，然后运行 `~/bin/openclaw-secret-backup.sh` 做第一次备份。备份存储在 `D:/openclaw-backups/secrets/`。
+- [x] ~~**配置 GITHUB_TOKEN**~~ — 已确认 .env 中的 token 正常传入容器，gh auth 和 git push 均正常。
+- [P1] **申请 BRAVE_API_KEY**：去 brave.com/search/api 申请，加到 .env。
 - [P1] Decide whether Claude Code Hub should stay standalone on `127.0.0.1:23000` or be explicitly integrated into OpenClaw workflows.
 - [P1] Decide whether to wait for the current `rightcode` quota/package window to recover or switch background jobs to a different working model path.
 - [P2] Decide whether to finalize bootstrap/identity cleanup now or later.
