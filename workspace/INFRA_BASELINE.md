@@ -119,6 +119,50 @@ Future sessions must not mix these three during commit or cleanup work.
 - It is intended for migration and disaster recovery of secret-bearing runtime state without pushing raw auth material into the normal git repos
 - Default archive target is on `D:`, not the pressure-constrained `C:`
 
+## 2026-03-20 13:30 Asia/Shanghai
+
+### `C:` pressure audit: current biggest confirmed cause is Docker Desktop virtual disk
+
+- Confirmed `C:` is still in a critical state at roughly `2.8 GB` free
+- Confirmed the dominant Windows-side consumer is Docker Desktop's data VHDX:
+  - `C:\\Users\\Lenovo\\AppData\\Local\\Docker\\wsl\\disk\\docker_data.vhdx`
+  - current on-disk size observed: about `72.2 GB`
+- Confirmed the Ubuntu package directory under:
+  - `C:\\Users\\Lenovo\\AppData\\Local\\Packages\\CanonicalGroupLimited.Ubuntu24.04LTS_79rhkp1fndgsc`
+  is **not** the main current space problem from the visible file summary
+
+### Important cleanup boundary
+
+- Do **not** treat the Docker VHDX file itself as a delete target
+- While OpenClaw is running, the safe posture is:
+  - no Docker Desktop reset
+  - no Docker volume prune for OpenClaw historical volumes
+  - no direct deletion under Docker's `wsl\\disk`
+- Any meaningful reclaim from that `72.2 GB` file now likely requires a planned Docker/WSL shutdown + compaction window after backups are in place
+
+### Other confirmed `C:` candidates that are not part of live OpenClaw runtime
+
+- `C:\\Users\\Lenovo\\Common Voice Scripted Speech 23.0 - English.tar.gz` about `8.45 GB`
+- `C:\\Users\\Lenovo\\Downloads` about `3.16 GB`, including duplicate installers and model wheels
+- `C:\\Users\\Lenovo\\english_teacher_env` about `462 MB`
+- `C:\\Users\\Lenovo\\vscode-remote-wsl` about `227 MB`
+
+These are potential future cleanup candidates, but they are not currently proven to be cloud-backed by the OpenClaw repos and therefore must not be auto-deleted under the “already on cloud” rule.
+
+### Docker runtime reclaim status
+
+- `docker system df` currently shows only limited immediate reclaim inside Docker:
+  - images reclaimable about `332 MB`
+  - local volumes reclaimable about `718 MB`
+  - build cache `0 B`
+- This reinforces that the remaining `C:` emergency is mostly a Windows-side virtual-disk compaction issue, not a large remaining live Docker cache problem
+
+### Legacy OpenClaw volumes are historical, not current, but still not yet cloud-backed
+
+- `openclaw_openclaw_state` and `openclaw_openclaw_gh_config` are currently not mounted by running containers
+- They appear to be historical volumes rather than live runtime dependencies
+- However, they must still be preserved until they are backed up through an explicit encrypted/archive flow, because they may still contain old state worth recovering
+
 ### Cleanup findings from this pass
 
 - The highest-risk reclaim target for `C:` was Docker build cache, not OpenClaw live state

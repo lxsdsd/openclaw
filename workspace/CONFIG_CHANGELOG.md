@@ -215,6 +215,15 @@ Next repair requirement:
 
 - do not re-diagnose from scratch
 - instead rebuild/redeploy the local OpenClaw runtime from the source tree that already contains `c600b340d` and later commits, then rerun the local gateway regression checks
+
+### `C:` pressure and encryption-path audit
+
+- Re-verified that current `C:` pressure is dominated by Docker Desktop's Windows-side VHDX file, not by unpushed OpenClaw git history
+- Re-verified there are zero local-only commits across the three canonical repos, so git cloud backup status is not the current `C:` blocker
+- Confirmed no default local GPG keyring exists under `/home/gaga/.gnupg`
+- Decision guidance updated:
+  - first encrypted secret-state backup should prefer symmetric mode
+  - legacy OpenClaw Docker volumes remain preserved for now because they are historical but not yet explicitly archived in encrypted form
 - copied current cookies from existing container into host file
 - recreated `xiaohongshu-mcp` under compose with bind-mounted cookie storage
 

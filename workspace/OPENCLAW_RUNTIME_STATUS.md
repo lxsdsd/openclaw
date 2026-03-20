@@ -65,6 +65,22 @@ Read this before attempting repair, restart, update, pairing, agent recovery, or
 - Optional:
   - add `--include-root-env` only when a deliberate encrypted backup of root `.env` is actually needed
 
+### Current key-management finding
+
+- No local GPG keyring was found at the default path under `/home/gaga/.gnupg`
+- Therefore the current most practical first-run encrypted backup path on this machine is:
+  - symmetric encryption
+  - passphrase file stored outside the repo
+  - encrypted archive written to `D:`
+- This avoids blocking on GPG keypair setup and matches the current “stabilize first” priority
+
+### Recommended first encrypted-backup posture
+
+- Use `scripts/backup-sensitive-runtime-state.sh --symmetric --passphrase-file <file>`
+- Store the passphrase file outside the repo and outside normal synced workspace state
+- Store the resulting `.gpg`, `.manifest.txt`, and `.sha256` under `D:` first
+- Only after verifying restore staging should a copy of the encrypted archive be uploaded to cloud storage
+
 ## Root repo fake-dirty rule
 
 - On this machine, a noisy root `git status` often means the product repo is seeing live runtime paths that belong to the running stack, not that product code is missing cloud backup
