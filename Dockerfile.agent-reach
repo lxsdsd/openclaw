@@ -8,16 +8,34 @@ ENV DEBIAN_FRONTEND=noninteractive \
     HOME=/home/node \
     PATH=/home/node/.local/bin:/usr/local/bin:/usr/bin:/bin
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      ca-certificates \
-      curl \
-      ffmpeg \
-      gnupg \
-      jq \
-      ripgrep \
-      python3-pip \
-      python3-venv && \
+RUN set -eux; \
+    apt-get update; \
+    for attempt in 1 2 3; do \
+      if apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        cmake \
+        curl \
+        ffmpeg \
+        git \
+        gnupg \
+        jq \
+        pkg-config \
+        ripgrep \
+        sqlite3 \
+        unzip \
+        python3-pip \
+        python3-venv; then \
+        break; \
+      fi; \
+      if [ "$attempt" -eq 3 ]; then \
+        exit 1; \
+      fi; \
+      apt-get clean; \
+      rm -rf /var/lib/apt/lists/*; \
+      sleep 5; \
+      apt-get update; \
+    done; \
     mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
       | dd of=/etc/apt/keyrings/githubcli-archive-keyring.gpg && \
@@ -25,10 +43,24 @@ RUN apt-get update && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
       > /etc/apt/sources.list.d/github-cli.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends gh && \
+    for attempt in 1 2 3; do \
+      if apt-get install -y --no-install-recommends gh; then \
+        break; \
+      fi; \
+      if [ "$attempt" -eq 3 ]; then \
+        exit 1; \
+      fi; \
+      apt-get clean; \
+      rm -rf /var/lib/apt/lists/*; \
+      sleep 5; \
+      apt-get update; \
+    done && \
     rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g @steipete/summarize mcporter undici xreach-cli
+
+RUN rm -f /usr/local/bin/qmd && \
+    npm_config_cache=/tmp/npm-cache npm install -g @tobilu/qmd
 
 RUN python3 -m pip install --break-system-packages \
       yt-dlp \
@@ -36,7 +68,18 @@ RUN python3 -m pip install --break-system-packages \
       https://github.com/Panniantong/agent-reach/archive/main.zip \
       https://github.com/Panniantong/mcp-server-weibo/archive/refs/heads/main.zip
 
-RUN install -d -o node -g node /home/node/.agent-reach
+RUN install -d -o node -g node \
+      /home/node/.agent-reach \
+      /home/node/.openclaw \
+      /home/node/.openclaw/agents \
+      /home/node/.openclaw/identity \
+      /home/node/.openclaw/memory \
+      /home/node/.openclaw/skills \
+      /home/node/.openclaw/devices \
+      /home/node/.openclaw/credentials \
+      /home/node/.openclaw/logs && \
+    touch /home/node/.openclaw/openclaw.json /home/node/.openclaw/exec-approvals.json /home/node/.openclaw/node.json && \
+    chown node:node /home/node/.openclaw/openclaw.json /home/node/.openclaw/exec-approvals.json /home/node/.openclaw/node.json
 
 USER node
 

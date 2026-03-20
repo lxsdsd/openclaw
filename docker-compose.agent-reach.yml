@@ -1,0 +1,51 @@
+services:
+  openclaw-gateway:
+    image: openclaw-agent-reach:local
+    build:
+      context: .
+      dockerfile: Dockerfile.agent-reach
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      RIGHTCODE_API_KEY: ${RIGHTCODE_API_KEY:-}
+      FOXCODE_API_KEY: ${FOXCODE_API_KEY:-}
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      FEISHU_APP_ID: ${FEISHU_APP_ID:-}
+      FEISHU_APP_SECRET: ${FEISHU_APP_SECRET:-}
+      FEISHU_VERIFICATION_TOKEN: ${FEISHU_VERIFICATION_TOKEN:-}
+      FEISHU_ENCRYPT_KEY: ${FEISHU_ENCRYPT_KEY:-}
+    volumes:
+      - /home/gaga/openclaw/var/config/gh:/home/node/.config/gh
+      - /home/gaga/openclaw/var/workspace:/home/node/.openclaw/workspace
+      - /home/gaga/openclaw/var/workspace/config/mcporter.json:/app/config/mcporter.json
+      - /home/gaga/openclaw/var:/home/gaga/openclaw/var
+      - ${OPENCLAW_QMD_MAIN_DIR:-/mnt/d/OpenClaw/qmd-memory/openclaw-main-qmd}:/home/node/.openclaw/agents/main/qmd
+
+  openclaw-cli:
+    image: openclaw-agent-reach:local
+    build:
+      context: .
+      dockerfile: Dockerfile.agent-reach
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      RIGHTCODE_API_KEY: ${RIGHTCODE_API_KEY:-}
+      FOXCODE_API_KEY: ${FOXCODE_API_KEY:-}
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      FEISHU_APP_ID: ${FEISHU_APP_ID:-}
+      FEISHU_APP_SECRET: ${FEISHU_APP_SECRET:-}
+      FEISHU_VERIFICATION_TOKEN: ${FEISHU_VERIFICATION_TOKEN:-}
+      FEISHU_ENCRYPT_KEY: ${FEISHU_ENCRYPT_KEY:-}
+    volumes:
+      - /home/gaga/openclaw/var/config/gh:/home/node/.config/gh
+      - /home/gaga/openclaw/var/workspace:/home/node/.openclaw/workspace
+      - /home/gaga/openclaw/var/workspace/config/mcporter.json:/app/config/mcporter.json
+      - /home/gaga/openclaw/var:/home/gaga/openclaw/var
+      - ${OPENCLAW_QMD_MAIN_DIR:-/mnt/d/OpenClaw/qmd-memory/openclaw-main-qmd}:/home/node/.openclaw/agents/main/qmd
+
+  xiaohongshu-mcp:
+    image: xpzouying/xiaohongshu-mcp
+    container_name: xiaohongshu-mcp
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18060:18060"
+    volumes:
+      - ./var/xiaohongshu-mcp/cookies.json:/app/cookies.json

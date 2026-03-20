@@ -62,6 +62,12 @@ vi.mock("./client.js", () => ({
   },
 }));
 
+vi.mock("./operator-device-auth.js", () => ({
+  preferStoredOperatorDeviceToken: (params: { auth: { token?: string; password?: string } }) =>
+    params.auth,
+  resolveStoredOperatorDeviceToken: () => undefined,
+}));
+
 const { buildGatewayConnectionDetails, callGateway, callGatewayCli, callGatewayScoped } =
   await import("./call.js");
 

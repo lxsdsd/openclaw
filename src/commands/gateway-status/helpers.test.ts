@@ -1,6 +1,24 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { storeDeviceAuthToken } from "../../infra/device-auth-store.js";
+import { loadOrCreateDeviceIdentity } from "../../infra/device-identity.js";
 import { withEnvAsync } from "../../test-utils/env.js";
 import { extractConfigSummary, resolveAuthForTarget } from "./helpers.js";
+
+async function createStateDirWithOperatorToken(token: string) {
+  const stateDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-gateway-probe-"));
+  const identityPath = path.join(stateDir, "identity", "device.json");
+  const identity = loadOrCreateDeviceIdentity(identityPath);
+  storeDeviceAuthToken({
+    deviceId: identity.deviceId,
+    role: "operator",
+    token,
+    env: { OPENCLAW_STATE_DIR: stateDir } as NodeJS.ProcessEnv,
+  });
+  return stateDir;
+}
 
 describe("extractConfigSummary", () => {
   it("marks SecretRef-backed gateway auth credentials as configured", () => {
@@ -229,6 +247,36 @@ describe("resolveAuthForTarget", () => {
           "gateway.auth.token SecretRef is unresolved (env:default:MISSING_GATEWAY_TOKEN).",
         );
         expect(auth.diagnostics?.join("\n")).not.toContain("missing or empty");
+      },
+    );
+  });
+
+  it("prefers the paired operator token for local loopback probes", async () => {
+    const stateDir = await createStateDirWithOperatorToken("device-token");
+    await withEnvAsync(
+      {
+        OPENCLAW_STATE_DIR: stateDir,
+        OPENCLAW_GATEWAY_TOKEN: "env-token",
+      },
+      async () => {
+        const auth = await resolveAuthForTarget(
+          {
+            gateway: {
+              auth: {
+                mode: "token",
+              },
+            },
+          },
+          {
+            id: "localLoopback",
+            kind: "localLoopback",
+            url: "ws://127.0.0.1:18789",
+            active: true,
+          },
+          {},
+        );
+
+        expect(auth).toEqual({ token: "device-token", password: undefined });
       },
     );
   });

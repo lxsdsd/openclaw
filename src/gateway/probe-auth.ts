@@ -5,6 +5,10 @@ import {
   isGatewaySecretRefUnavailableError,
   resolveGatewayProbeCredentialsFromConfig,
 } from "./credentials.js";
+import {
+  preferStoredOperatorDeviceToken,
+  resolveStoredOperatorDeviceToken,
+} from "./operator-device-auth.js";
 
 function buildGatewayProbeCredentialPolicy(params: {
   cfg: OpenClawConfig;
@@ -30,7 +34,15 @@ export function resolveGatewayProbeAuth(params: {
   env?: NodeJS.ProcessEnv;
 }): { token?: string; password?: string } {
   const policy = buildGatewayProbeCredentialPolicy(params);
-  return resolveGatewayProbeCredentialsFromConfig(policy);
+  const storedOperatorToken =
+    params.mode === "local" ? resolveStoredOperatorDeviceToken(params.env) : undefined;
+  return preferStoredOperatorDeviceToken({
+    auth: storedOperatorToken
+      ? { token: storedOperatorToken }
+      : resolveGatewayProbeCredentialsFromConfig(policy),
+    env: params.env,
+    preferStoredDeviceToken: params.mode === "local",
+  });
 }
 
 export async function resolveGatewayProbeAuthWithSecretInputs(params: {
@@ -40,13 +52,24 @@ export async function resolveGatewayProbeAuthWithSecretInputs(params: {
   explicitAuth?: ExplicitGatewayAuth;
 }): Promise<{ token?: string; password?: string }> {
   const policy = buildGatewayProbeCredentialPolicy(params);
-  return await resolveGatewayCredentialsWithSecretInputs({
-    config: policy.config,
-    env: policy.env,
+  const storedOperatorToken =
+    params.mode === "local" && !(policy.explicitAuth?.token || policy.explicitAuth?.password)
+      ? resolveStoredOperatorDeviceToken(params.env)
+      : undefined;
+  return preferStoredOperatorDeviceToken({
+    auth: storedOperatorToken
+      ? { token: storedOperatorToken }
+      : await resolveGatewayCredentialsWithSecretInputs({
+          config: policy.config,
+          env: policy.env,
+          explicitAuth: policy.explicitAuth,
+          modeOverride: policy.modeOverride,
+          includeLegacyEnv: policy.includeLegacyEnv,
+          remoteTokenFallback: policy.remoteTokenFallback,
+        }),
     explicitAuth: policy.explicitAuth,
-    modeOverride: policy.modeOverride,
-    includeLegacyEnv: policy.includeLegacyEnv,
-    remoteTokenFallback: policy.remoteTokenFallback,
+    env: params.env,
+    preferStoredDeviceToken: params.mode === "local",
   });
 }
 

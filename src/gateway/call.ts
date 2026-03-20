@@ -33,6 +33,10 @@ import {
   type OperatorScope,
 } from "./method-scopes.js";
 import { isSecureWebSocketUrl } from "./net.js";
+import {
+  preferStoredOperatorDeviceToken,
+  resolveStoredOperatorDeviceToken,
+} from "./operator-device-auth.js";
 import { PROTOCOL_VERSION } from "./protocol/index.js";
 
 type CallGatewayBaseOptions = {
@@ -866,7 +870,29 @@ async function callGatewayWithScopes<T = Record<string, unknown>>(
 ): Promise<T> {
   const { timeoutMs, safeTimerTimeoutMs } = resolveGatewayCallTimeout(opts.timeoutMs);
   const context = resolveGatewayCallContext(opts);
-  const resolvedCredentials = await resolveGatewayCredentials(context);
+  const connectionDetails = buildGatewayConnectionDetails({
+    config: context.config,
+    url: context.urlOverride,
+    urlSource: context.urlOverrideSource,
+    ...(opts.configPath ? { configPath: opts.configPath } : {}),
+  });
+  const preferStoredDeviceToken =
+    !context.urlOverride &&
+    !context.remoteUrl &&
+    (connectionDetails.urlSource === "local loopback" ||
+      connectionDetails.urlSource === "missing gateway.remote.url (fallback local)");
+  const storedOperatorToken =
+    preferStoredDeviceToken && !(context.explicitAuth.token || context.explicitAuth.password)
+      ? resolveStoredOperatorDeviceToken(process.env)
+      : undefined;
+  const resolvedCredentials = preferStoredOperatorDeviceToken({
+    auth: storedOperatorToken
+      ? { token: storedOperatorToken }
+      : await resolveGatewayCredentials(context),
+    explicitAuth: context.explicitAuth,
+    env: process.env,
+    preferStoredDeviceToken,
+  });
   ensureExplicitGatewayAuth({
     urlOverride: context.urlOverride,
     urlOverrideSource: context.urlOverrideSource,
@@ -876,12 +902,6 @@ async function callGatewayWithScopes<T = Record<string, unknown>>(
     configPath: context.configPath,
   });
   ensureRemoteModeUrlConfigured(context);
-  const connectionDetails = buildGatewayConnectionDetails({
-    config: context.config,
-    url: context.urlOverride,
-    urlSource: context.urlOverrideSource,
-    ...(opts.configPath ? { configPath: opts.configPath } : {}),
-  });
   const url = connectionDetails.url;
   const tlsFingerprint = await resolveGatewayTlsFingerprint({ opts, context, url });
   const { token, password } = resolvedCredentials;

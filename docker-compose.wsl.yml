@@ -3,6 +3,7 @@ services:
     environment:
       TAVILY_API_KEY: ${TAVILY_API_KEY:-}
       RIGHTCODE_API_KEY: ${RIGHTCODE_API_KEY:-}
+      FOXCODE_API_KEY: ${FOXCODE_API_KEY:-}
     volumes:
       - openclaw_state:/home/node/.openclaw
       - openclaw_gh_config:/home/node/.config/gh
@@ -10,6 +11,7 @@ services:
     environment:
       TAVILY_API_KEY: ${TAVILY_API_KEY:-}
       RIGHTCODE_API_KEY: ${RIGHTCODE_API_KEY:-}
+      FOXCODE_API_KEY: ${FOXCODE_API_KEY:-}
     volumes:
       - openclaw_state:/home/node/.openclaw
       - openclaw_gh_config:/home/node/.config/gh

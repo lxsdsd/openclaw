@@ -2,6 +2,10 @@ import { resolveGatewayPort } from "../../config/config.js";
 import type { OpenClawConfig, ConfigFileSnapshot } from "../../config/types.js";
 import { hasConfiguredSecretInput } from "../../config/types.secrets.js";
 import { readGatewayPasswordEnv, readGatewayTokenEnv } from "../../gateway/credentials.js";
+import {
+  preferStoredOperatorDeviceToken,
+  resolveStoredOperatorDeviceToken,
+} from "../../gateway/operator-device-auth.js";
 import type { GatewayProbeResult } from "../../gateway/probe.js";
 import { resolveConfiguredSecretInputString } from "../../gateway/resolve-configured-secret-input-string.js";
 import { pickPrimaryTailnetIPv4 } from "../../infra/tailnet.js";
@@ -191,6 +195,8 @@ export async function resolveAuthForTarget(
   };
   const withDiagnostics = <T extends { token?: string; password?: string }>(result: T) =>
     diagnostics.length > 0 ? { ...result, diagnostics } : result;
+  const storedOperatorToken =
+    target.kind === "localLoopback" ? resolveStoredOperatorDeviceToken(process.env) : undefined;
 
   if (target.kind === "configRemote" || target.kind === "sshTunnel") {
     const remoteTokenValue = cfg.gateway?.remote?.token;
@@ -210,40 +216,83 @@ export async function resolveAuthForTarget(
 
   const envToken = readGatewayTokenEnv();
   const envPassword = readGatewayPasswordEnv();
+  if (storedOperatorToken) {
+    return withDiagnostics({ token: storedOperatorToken });
+  }
   if (tokenOnly) {
+    if (envToken) {
+      return withDiagnostics(
+        preferStoredOperatorDeviceToken({
+          auth: { token: envToken },
+          preferStoredDeviceToken: target.kind === "localLoopback",
+        }),
+      );
+    }
     const token = await resolveToken(cfg.gateway?.auth?.token, "gateway.auth.token");
     if (token) {
-      return withDiagnostics({ token });
-    }
-    if (envToken) {
-      return { token: envToken };
+      return withDiagnostics(
+        preferStoredOperatorDeviceToken({
+          auth: { token },
+          preferStoredDeviceToken: target.kind === "localLoopback",
+        }),
+      );
     }
     return withDiagnostics({});
   }
   if (passwordOnly) {
+    if (envPassword) {
+      return withDiagnostics(
+        preferStoredOperatorDeviceToken({
+          auth: { password: envPassword },
+          preferStoredDeviceToken: target.kind === "localLoopback",
+        }),
+      );
+    }
     const password = await resolvePassword(cfg.gateway?.auth?.password, "gateway.auth.password");
     if (password) {
-      return withDiagnostics({ password });
-    }
-    if (envPassword) {
-      return { password: envPassword };
+      return withDiagnostics(
+        preferStoredOperatorDeviceToken({
+          auth: { password },
+          preferStoredDeviceToken: target.kind === "localLoopback",
+        }),
+      );
     }
     return withDiagnostics({});
   }
 
-  const token = await resolveToken(cfg.gateway?.auth?.token, "gateway.auth.token");
-  if (token) {
-    return withDiagnostics({ token });
-  }
   if (envToken) {
-    return { token: envToken };
+    return withDiagnostics(
+      preferStoredOperatorDeviceToken({
+        auth: { token: envToken },
+        preferStoredDeviceToken: target.kind === "localLoopback",
+      }),
+    );
   }
   if (envPassword) {
-    return withDiagnostics({ password: envPassword });
+    return withDiagnostics(
+      preferStoredOperatorDeviceToken({
+        auth: { password: envPassword },
+        preferStoredDeviceToken: target.kind === "localLoopback",
+      }),
+    );
+  }
+  const token = await resolveToken(cfg.gateway?.auth?.token, "gateway.auth.token");
+  if (token) {
+    return withDiagnostics(
+      preferStoredOperatorDeviceToken({
+        auth: { token },
+        preferStoredDeviceToken: target.kind === "localLoopback",
+      }),
+    );
   }
   const password = await resolvePassword(cfg.gateway?.auth?.password, "gateway.auth.password");
 
-  return withDiagnostics({ token, password });
+  return withDiagnostics(
+    preferStoredOperatorDeviceToken({
+      auth: { token, password },
+      preferStoredDeviceToken: target.kind === "localLoopback",
+    }),
+  );
 }
 
 export { pickGatewaySelfPresence };

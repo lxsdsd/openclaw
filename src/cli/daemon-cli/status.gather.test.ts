@@ -1,4 +1,9 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { storeDeviceAuthToken } from "../../infra/device-auth-store.js";
+import { loadOrCreateDeviceIdentity } from "../../infra/device-identity.js";
 import { captureEnv } from "../../test-utils/env.js";
 
 const callGatewayStatusProbe = vi.fn(async (_opts?: unknown) => ({ ok: true as const }));
@@ -113,6 +118,19 @@ vi.mock("./probe.js", () => ({
 }));
 
 const { gatherDaemonStatus } = await import("./status.gather.js");
+
+async function createStateDirWithOperatorToken(token: string) {
+  const stateDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-daemon-status-"));
+  const identityPath = path.join(stateDir, "identity", "device.json");
+  const identity = loadOrCreateDeviceIdentity(identityPath);
+  storeDeviceAuthToken({
+    deviceId: identity.deviceId,
+    role: "operator",
+    token,
+    env: { OPENCLAW_STATE_DIR: stateDir } as NodeJS.ProcessEnv,
+  });
+  return stateDir;
+}
 
 describe("gatherDaemonStatus", () => {
   let envSnapshot: ReturnType<typeof captureEnv>;
@@ -247,6 +265,29 @@ describe("gatherDaemonStatus", () => {
     expect(callGatewayStatusProbe).toHaveBeenCalledWith(
       expect.objectContaining({
         token: "daemon-secretref-token",
+      }),
+    );
+  });
+
+  it("prefers the paired operator token for local daemon probes", async () => {
+    const stateDir = await createStateDirWithOperatorToken("device-token");
+    serviceReadCommand.mockResolvedValueOnce({
+      programArguments: ["/bin/node", "cli", "gateway", "--port", "19001"],
+      environment: {
+        OPENCLAW_STATE_DIR: stateDir,
+        OPENCLAW_CONFIG_PATH: `${stateDir}/openclaw.json`,
+      },
+    });
+
+    await gatherDaemonStatus({
+      rpc: {},
+      probe: true,
+      deep: false,
+    });
+
+    expect(callGatewayStatusProbe).toHaveBeenCalledWith(
+      expect.objectContaining({
+        token: "device-token",
       }),
     );
   });
