@@ -198,5 +198,84 @@ class MLApi(BaseHTTPAPI):
         else:
             # get only tasks with annotations
             tasks = project.tasks.annotate(num_annotations=Count('annotations')).filter(num_annotations__gt=0)
+            # create serialized tasks with annotations: {"data": {...}, "annotations": [{...}], "predictions": [{...}]}
+            tasks_ser = ExportDataSerializer(tasks, many=True).data
+            logger.debug(f'{len(tasks_ser)} tasks with annotations are sent to ML backend for training.')
+            request = {
+                'annotations': tasks_ser,
+                'project': self._create_project_uid(project),
+                'label_config': project.label_config,
+                'params': {'login': project.task_data_login, 'password': project.task_data_password},
+            }
+            return self._request('train', request, verbose=False, timeout=TIMEOUT_PREDICT)
 
-[82 more lines in file. Use offset=201 to continue.]
+    def _prep_prediction_req(self, tasks, project, context=None):
+        request = {
+            'tasks': tasks,
+            'project': self._create_project_uid(project),
+            'label_config': project.label_config,
+            'params': {
+                'login': project.task_data_login,
+                'password': project.task_data_password,
+                'context': context,
+            },
+        }
+
+        return request
+
+    def make_predictions(self, tasks, project, context=None):
+        request = self._prep_prediction_req(tasks, project, context=context)
+        return self._request(PREDICT_URL, request, verbose=False, timeout=TIMEOUT_PREDICT)
+
+    def health(self):
+        return self._request(HEALTH_URL, method='GET', timeout=TIMEOUT_HEALTH)
+
+    def validate(self, config):
+        return self._request(VALIDATE_URL, request={'config': config}, timeout=self._validate_request_timeout)
+
+    def setup(self, project, extra_params=None, **kwargs):
+        return self._request(
+            SETUP_URL,
+            request={
+                'project': self._create_project_uid(project),
+                'schema': project.label_config,
+                'hostname': settings.HOSTNAME if settings.HOSTNAME else ('http://localhost:' + settings.INTERNAL_PORT),
+                'access_token': project.created_by.auth_token.key,
+                'extra_params': extra_params,
+            },
+            timeout=TIMEOUT_SETUP,
+        )
+
+    def duplicate_model(self, project_src, project_dst):
+        return self._request(
+            DUPLICATE_URL,
+            request={
+                'project_src': self._create_project_uid(project_src),
+                'project_dst': self._create_project_uid(project_dst),
+            },
+            timeout=TIMEOUT_DUPLICATE_MODEL,
+        )
+
+    def delete(self, project):
+        return self._request(
+            DELETE_URL, request={'project': self._create_project_uid(project)}, timeout=TIMEOUT_DELETE
+        )
+
+    def get_train_job_status(self, train_job):
+        return self._request(JOB_STATUS_URL, request={'job': train_job.job_id}, timeout=TIMEOUT_TRAIN_JOB_STATUS)
+
+    def get_versions(self, project):
+        return self._request(
+            VERSIONS_URL, request={'project': self._create_project_uid(project)}, timeout=TIMEOUT_SETUP, method='GET'
+        )
+
+
+def get_ml_api(project):
+    if project.ml_backend_active_connection is None:
+        return None
+    if project.ml_backend_active_connection.ml_backend is None:
+        return None
+    return MLApi(
+        url=project.ml_backend_active_connection.ml_backend.url,
+        timeout=project.ml_backend_active_connection.ml_backend.timeout,
+    )

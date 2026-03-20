@@ -91,6 +91,13 @@ Main files:
 - Do not copy secrets or auth dumps into project notes.
 - Keep cross-project standards in workspace docs, not duplicated in every repo.
 - Prefer explicit status files over relying on chat history.
+- Each active project should have its own corresponding git/GitHub repo; do not leave two live projects sharing one long-term history line.
+
+## Current repo mapping
+
+- OpenClaw config/workspace state lives in `assistant-state-backup/` and maps to GitHub repo `lxsdsd/openclaw`.
+- `English_study` lives in `projects/english-study/repo/` and maps to GitHub repo `lxsdsd/English_study`.
+- Recovery branches may exist temporarily during repair, but future default work should return to the project's normal long-term branch instead of staying on a one-off recovery branch.
 
 ## Current usage decision
 

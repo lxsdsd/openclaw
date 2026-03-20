@@ -93,17 +93,18 @@ OpenClaw provides tools to share learnings across sessions:
 
 ### Optional: Enable Hook
 
-For automatic reminders at session start:
+For automatic reminders at session start, install a real OpenClaw hook directory with both `HOOK.md` and `handler.ts`.
+OpenClaw does not auto-discover source files that only live inside a skill folder.
+
+Recommended workspace-local path:
 
 ```bash
-# Copy hook to OpenClaw hooks directory
-cp -r hooks/openclaw ~/.openclaw/hooks/self-improvement
-
-# Enable it
-openclaw hooks enable self-improvement
+mkdir -p ~/.openclaw/workspace/hooks/self-improvement-reminder
+# Place HOOK.md + handler.ts in that directory, then enable it
+openclaw hooks enable self-improvement-reminder
 ```
 
-See `references/openclaw-integration.md` for complete details.
+See `references/openclaw-integration.md` for the current OpenClaw-specific activation notes and pitfalls.
 
 ---
 

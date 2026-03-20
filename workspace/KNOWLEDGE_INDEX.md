@@ -29,6 +29,7 @@ Top-level index for operational Markdown and policy files in this workspace. Add
 | `NAME_PREFERENCE.md` | persona-style | Preferred assistant display name and naming rules | Any naming preference change |
 | `AVATAR_PROMPT.md` | persona-style | Reusable avatar-generation prompt and style notes | Any avatar direction or art-style change |
 | `IDENTITY.md` | identity | Current assistant identity basics such as name, vibe, emoji, and avatar | Any identity or persona-default update |
+| `OPENCLAW_FOUNDATION_GAP_LIST_2026-03-20.md` | audit/todo | Prioritized OpenClaw foundation-gap list from the 2026-03-20 live checks | Any major infra finding is added, resolved, or reprioritized |
 
 ## Index rules
 

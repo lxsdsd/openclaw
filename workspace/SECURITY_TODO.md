@@ -2,7 +2,7 @@
 
 ## Priority 0 - Do first
 
-- [x] Stop exposing the OpenClaw gateway on LAN; changed bind mode from `lan` to `loopback`.
+- [ ] Stop exposing the OpenClaw gateway on LAN; live config is still `gateway.bind: lan`, so switch it back to loopback and verify local control clients still work afterward.
 - [x] Rotate the current gateway token to a long random value.
 - [x] Define a default sensitive-path policy before any broader filesystem work.
 - [x] Keep `web_search` disabled until a provider key is intentionally configured with spending limits.
@@ -14,7 +14,10 @@
 - [x] Tighten browser SSRF posture (`browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: false`).
 - [x] Decide whether browser control should remain enabled at all; disabled it by default.
 - [x] Reconnect local control clients after token rotation; gateway RPC and Feishu are healthy again.
-- [ ] Review `openclaw security audit --fix` output before deciding whether to apply it.
+- [x] Restrict Feishu inbound posture: DM is now allowlist-only, group intake is allowlist-only with no approved groups yet, sensitive logging is redacted for tools, and gateway auth rate limiting is set.
+- [x] Verify `tavily` is live with the intentionally added API key before treating it as an available research path.
+- [ ] Fix local CLI credential selection so paired operator device-token reads are usable again (`operator.read`/cron/nodes should not stay pinned to the shared `OPENCLAW_GATEWAY_TOKEN` path).
+- [ ] Review `openclaw security audit --fix` output before deciding whether to apply any remaining config-side changes.
 - [ ] Finalize bootstrap/identity cleanup after the user decides whether to keep refining those files now.
 - [x] Make `skill-vetting` the default gate before any future skill install or update.
 - [ ] Re-check the external `openclaw-skill-vetter` package after rate limits clear; this is backlog follow-up, not the current front-of-queue task.
@@ -30,6 +33,7 @@
 - [x] Add a structured backlog convention for future capability tracks (`BACKLOG_CONVENTION.md`).
 - [ ] Keep all future durable `.md` files registered in `KNOWLEDGE_INDEX.md`.
 - [ ] Keep all future lessons and near-misses recorded in `PITFALLS.md`.
+- [x] Treat `find-skill` as unavailable unless a runtime-visible install exists under the active OpenClaw skill roots.
 
 ## Priority 2 - Safe operating policy
 

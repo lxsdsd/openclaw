@@ -1,3 +1,192 @@
+"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license.
+"""
+import logging
+from typing import Dict, List
+
+from core.utils.common import conditional_atomic, db_is_not_sqlite, load_func
+from django.conf import settings
+from django.db import models, transaction
+from django.db.models import Count, JSONField, Q
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
+from ml.api_connector import PREDICT_URL, TIMEOUT_PREDICT, MLApi
+from projects.models import Project
+from tasks.serializers import PredictionSerializer, TaskSimpleSerializer
+from webhooks.serializers import Webhook, WebhookSerializer
+
+logger = logging.getLogger(__name__)
+
+MAX_JOBS_PER_PROJECT = 1
+
+InteractiveAnnotatingDataSerializer = load_func(settings.INTERACTIVE_DATA_SERIALIZER)
+
+
+class MLBackendState(models.TextChoices):
+    CONNECTED = 'CO', _('Connected')
+    DISCONNECTED = 'DI', _('Disconnected')
+    ERROR = 'ER', _('Error')
+    TRAINING = 'TR', _('Training')
+    PREDICTING = 'PR', _('Predicting')
+
+
+class MLBackendAuth(models.TextChoices):
+    NONE = 'NONE', _('None')
+    BASIC_AUTH = 'BASIC_AUTH', _('Basic Auth')
+
+
+class MLBackend(models.Model):
+    """ """
+
+    state = models.CharField(
+        max_length=2,
+        choices=MLBackendState.choices,
+        default=MLBackendState.DISCONNECTED,
+    )
+    is_interactive = models.BooleanField(
+        _('is_interactive'),
+        default=False,
+        help_text=('Used to interactively annotate tasks. ' 'If true, model returns one list with results'),
+    )
+    url = models.TextField(
+        _('url'),
+        help_text='URL for the machine learning model server',
+    )
+    error_message = models.TextField(
+        _('error_message'),
+        blank=True,
+        null=True,
+        help_text='Error message in error state',
+    )
+    title = models.TextField(
+        _('title'),
+        blank=True,
+        null=True,
+        default='default',
+        help_text='Name of the machine learning backend',
+    )
+
+    auth_method = models.CharField(
+        max_length=255,
+        choices=MLBackendAuth.choices,
+        default=MLBackendAuth.NONE,
+    )
+
+    basic_auth_user = models.TextField(
+        _('basic auth user'),
+        blank=True,
+        null=True,
+        default='',
+        help_text='HTTP Basic Auth user',
+    )
+
+    basic_auth_pass = models.TextField(
+        _('basic auth password'),
+        blank=True,
+        null=True,
+        default='',
+        help_text='HTTP Basic Auth password',
+    )
+
+    description = models.TextField(
+        _('description'),
+        blank=True,
+        null=True,
+        default='',
+        help_text='Description for the machine learning backend',
+    )
+
+    extra_params = JSONField(
+        _('extra params'),
+        null=True,
+        help_text='Any extra parameters passed to the ML Backend during the setup',
+    )
+
+    model_version = models.TextField(
+        _('model version'),
+        blank=True,
+        null=True,
+        default='',
+        help_text='Current model version associated with this machine learning backend',
+    )
+    timeout = models.FloatField(
+        _('timeout'),
+        blank=True,
+        default=100.0,
+        help_text='Response model timeout',
+    )
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='ml_backends',
+    )
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+    auto_update = models.BooleanField(
+        _('auto_update'),
+        default=True,
+        help_text='If false, model version is set by the user, if true - getting latest version from backend.',
+    )
+
+    def __str__(self):
+        return f'{self.title} (id={self.id}, url={self.url})'
+
+    def __init__(self, *args, **kwargs):
+        super(MLBackend, self).__init__(*args, **kwargs)
+        self.__original_title = self.title
+
+    def save(self, *args, **kwargs):
+        """
+        Overrides the save() method to update the associated project's model_version field.
+        If the title of the model instance is changed and the model_version
+        of the related project is currently the same as the original title,
+        the project's model_version is updated to the new title.
+        """
+        p = self.project
+
+        if self.title != self.__original_title and p.model_version == self.__original_title:
+            with transaction.atomic():
+                p.model_version = self.title
+                p.save(update_fields=['model_version'])
+                super().save(*args, **kwargs)
+                # reset original field to current field after save
+                self.__original_title = self.title
+        else:
+            super().save(*args, **kwargs)
+
+    @staticmethod
+    def healthcheck_(url, auth_method=None, **kwargs):
+        return MLApi(url=url, auth_method=auth_method, **kwargs).health()
+
+    def has_permission(self, user):
+        user.project = self.project  # link for activity log
+        return self.project.has_permission(user)
+
+    @staticmethod
+    def setup_(url, project, auth_method=None, **kwargs):
+        api = MLApi(url=url, auth_method=auth_method, **kwargs)
+
+        if not isinstance(project, Project):
+            project = Project.objects.get(pk=project)
+        return api.setup(project, **kwargs)
+
+    def healthcheck(self):
+        return self.healthcheck_(
+            self.url, self.auth_method, basic_auth_user=self.basic_auth_user, basic_auth_pass=self.basic_auth_pass
+        )
+
+    def setup(self):
+        return self.setup_(
+            self.url,
+            self.project,
+            self.auth_method,
+            extra_params=self.extra_params,
+            basic_auth_user=self.basic_auth_user,
+            basic_auth_pass=self.basic_auth_pass,
+        )
+
+    @property
+    def api(self):
         return MLApi(
             url=self.url,
             timeout=self.timeout,
@@ -239,4 +428,92 @@
 
 class MLBackendPredictionJob(models.Model):
 
-[91 more lines in file. Use offset=430 to continue.]
+    job_id = models.CharField(max_length=128)
+    ml_backend = models.ForeignKey(MLBackend, related_name='prediction_jobs', on_delete=models.CASCADE)
+    model_version = models.TextField(
+        _('model version'), blank=True, null=True, help_text='Model version this job is associated with'
+    )
+    batch_size = models.PositiveSmallIntegerField(
+        _('batch size'), default=100, help_text='Number of tasks processed per batch'
+    )
+
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+
+class MLBackendTrainJob(models.Model):
+
+    job_id = models.CharField(max_length=128)
+    ml_backend = models.ForeignKey(MLBackend, related_name='train_jobs', on_delete=models.CASCADE)
+    model_version = models.TextField(
+        _('model version'),
+        blank=True,
+        null=True,
+        help_text='Model version this job is associated with',
+    )
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    def get_status(self):
+        project = self.ml_backend.project
+        ml_api = project.get_ml_api()
+        if not ml_api:
+            logger.error(
+                f"Training job {self.id}: Can't collect training jobs for project {project.id}: ML API is null"
+            )
+            return None
+        ml_api_result = ml_api.get_train_job_status(self)
+        if ml_api_result.is_error:
+            if ml_api_result.status_code == 410:
+                return {'job_status': 'removed'}
+            logger.info(
+                f"Training job {self.id}: Can't collect training jobs for project {project}: "
+                f'ML API returns error {ml_api_result.error_message}'
+            )
+            return None
+        return ml_api_result.response
+
+    @property
+    def is_running(self):
+        status = self.get_status()
+        return status['job_status'] in ('queued', 'started')
+
+
+def _validate_ml_api_result(ml_api_result, tasks, curr_logger):
+    if ml_api_result.is_error:
+        curr_logger.info(ml_api_result.error_message)
+        return False
+
+    results = ml_api_result.response['results']
+    if not isinstance(results, list) or len(results) != len(tasks):
+        curr_logger.warning('Num input tasks is %d but ML API returns %d results', len(tasks), len(results))
+        return False
+
+    return True
+
+
+@receiver(pre_delete, sender=MLBackend)
+def modify_project_model_version(sender, instance, **kwargs):
+    project = instance.project
+
+    if project.model_version == instance.title:
+        project.model_version = ''
+        project.save(update_fields=['model_version'])
+
+
+@receiver(post_save, sender=MLBackend)
+def create_ml_webhook(sender, instance, created, **kwargs):
+    if not created:
+        return
+    ml_backend = instance
+    webhook_url = ml_backend.url.rstrip('/') + '/webhook'
+    project = ml_backend.project
+    if Webhook.objects.filter(project=project, url=webhook_url).exists():
+        logger.info(f'Webhook {webhook_url} already exists for project {project}: skip creating new one.')
+        return
+    logger.info(f'Create ML backend webhook {webhook_url}')
+    ser = WebhookSerializer(
+        data=dict(project=project.id, url=webhook_url, send_payload=True, send_for_all_actions=True)
+    )
+    if ser.is_valid():
+        ser.save(organization=project.organization)

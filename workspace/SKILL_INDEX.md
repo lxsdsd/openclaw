@@ -18,8 +18,8 @@ Canonical index of installed, local, and planned skills. Every skill should have
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | skill-vetting | local | local-workspace | draft | local | 2026-03-12 | low | Local mandatory pre-install review workflow created in `skills/skill-vetting/`. |
 | skill-vetter | local | local-workspace | unknown | unknown | 2026-03-12 | medium | Workspace skill present and ready; distinct from `skill-vetting`, used as an additional security-first review skill. |
-| self-improving-agent | local | local-workspace | unknown | unknown | 2026-03-12 | low | Folder present in workspace; runtime skill name is `self-improvement`; loaded but `.learnings/` is not initialized yet. |
-| tavily-search | local | local-workspace | unknown | unknown | 2026-03-12 | medium | Folder present in workspace; runtime skill name is `tavily`; loaded but depends on `TAVILY_API_KEY`. |
+| self-improving-agent | local | local-workspace | unknown | unknown | 2026-03-19 | low | Folder present in workspace; runtime skill name is `self-improvement`; `.learnings/` is initialized and present in workspace; workspace hook `self-improvement-reminder` is now discoverable and enabled in live config. |
+| tavily-search | local | local-workspace | unknown | unknown | 2026-03-20 | medium | Runtime skill name is `tavily`. Final disposition: keep as a reviewed local skill because it is already intentionally enabled, tiny, and bounded to Tavily official `/search` and `/extract` endpoints with `TAVILY_API_KEY` plus user-supplied query/URL only. Treat the audit hit as accepted remote-API usage, not as proof of broad secret harvesting; new external skills still require normal vetting. |
 | agent-reach | installed | managed-local | unknown | unknown | 2026-03-12 | high | Runtime-visible under `/home/node/.openclaw/skills`; doctor runs and reports partial channel availability. |
 | openclaw-skill-vetter | review-needed | clawhub | 1.0.0 | donovanpankratz-del | 2026-03-12 | unknown | Search hit found via clawhub; file inspection hit rate limit before full review. |
 

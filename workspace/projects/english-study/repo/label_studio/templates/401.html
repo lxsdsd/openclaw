@@ -1,0 +1,25 @@
+{% extends 'simple.html' %}
+{% load static %}
+
+{% block head %}
+  <title>401 | Label Studio</title>
+  <link rel="stylesheet" href="{{ settings.HOSTNAME }}{% static 'css/error.css' %}"/>
+{% endblock %}
+
+
+{% block content %}
+<div class="ls-global-error">
+  <h1>认证错误</h1>
+  <img class="ls-global-error__heidi" src="{{ settings.HOSTNAME }}{% static 'images/opossum_broken.svg' %}" height="111" alt="页面异常" />
+  <h2>未提供认证凭据</h2>
+  <div class="ls-global-error__details">{{ exception }}</div>
+  <p class="ls-global-error__actions">
+    <a class="ls-global-error__slack button" target="_blank" href="https://slack.labelstud.io/?source=product-401-error">
+      <img src="{{ settings.HOSTNAME }}{% static 'images/slack.png' %}" width="16" />
+      去 Slack 求助
+    </a>
+    <button onClick="history.back()">返回上一页</button>
+    <button onClick="location.reload()">重新加载</button>
+  </p>
+</div>
+{% endblock %}

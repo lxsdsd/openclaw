@@ -1,44 +1,40 @@
+import { Result, Spin } from "antd";
+import { observer, Provider } from "mobx-react";
+import { getEnv, getRoot } from "mobx-state-tree";
 /**
  * Libraries
  */
 import React, { Component } from "react";
-import { Result, Spin } from "antd";
-import { getEnv, getRoot } from "mobx-state-tree";
-import { observer, Provider } from "mobx-react";
-
+import { Button } from "../../common/Button/Button";
 /**
- * Core
+ * Utils and common components
  */
-import Tree from "../../core/Tree";
-import { TreeValidation } from "../TreeValidation/TreeValidation";
-
+import { Space } from "../../common/Space/Space";
 /**
  * Tags
  */
 import "../../tags/object";
 import "../../tags/control";
 import "../../tags/visual";
-
 /**
- * Utils and common components
+ * Core
  */
-import { Space } from "../../common/Space/Space";
-import { Button } from "../../common/Button/Button";
+import Tree from "../../core/Tree";
 import { Block, Elem } from "../../utils/bem";
-import { FF_DEV_1170, FF_DEV_3873, FF_LSDV_4620_3_ML, FF_SIMPLE_INIT, isFF } from "../../utils/feature-flags";
+import {
+  FF_DEV_1170,
+  FF_DEV_3873,
+  FF_LSDV_4620_3_ML,
+  FF_SIMPLE_INIT,
+  isFF,
+} from "../../utils/feature-flags";
 import { sanitizeHtml } from "../../utils/html";
 import { reactCleaner } from "../../utils/reactCleaner";
 import { guidGenerator } from "../../utils/unique";
 import { isDefined, sortAnnotations } from "../../utils/utilities";
-
-/**
- * Components
- */
-import { Annotation } from "./Annotation";
 import { AnnotationTab } from "../AnnotationTab/AnnotationTab";
 import { BottomBar } from "../BottomBar/BottomBar";
 import Debug from "../Debug";
-import Grid from "./Grid";
 import { InstructionsModal } from "../InstructionsModal/InstructionsModal";
 import { RelationsOverlay } from "../RelationsOverlay/RelationsOverlay";
 import Segment from "../Segment/Segment";
@@ -47,7 +43,12 @@ import { SidebarTabs } from "../SidebarTabs/SidebarTabs";
 import { SidePanels } from "../SidePanels/SidePanels";
 import { SideTabsPanels } from "../SidePanels/TabPanels/SideTabsPanels";
 import { TopBar } from "../TopBar/TopBar";
-
+import { TreeValidation } from "../TreeValidation/TreeValidation";
+/**
+ * Components
+ */
+import { Annotation } from "./Annotation";
+import Grid from "./Grid";
 /**
  * Styles
  */
@@ -94,9 +95,13 @@ class App extends Component {
         }}
       >
         <Result status="success" title={getEnv(this.props.store).messages.NO_NEXT_TASK} />
-        <Block name="sub__result">你已完成队列中的所有任务！</Block>
-        <Button onClick={(e) => store.prevTask(e, true)} look="outlined" style={{ margin: "16px 0" }}>
-          返回上一个任务
+        <Block name="sub__result">队列中的任务已全部完成！</Block>
+        <Button
+          onClick={(e) => store.prevTask(e, true)}
+          look="outlined"
+          style={{ margin: "16px 0" }}
+        >
+          返回上一条任务
         </Button>
       </Block>
     );
@@ -116,7 +121,9 @@ class App extends Component {
         <Elem name="annotation">
           <TreeValidation errors={this.props.store.annotationStore.validation} />
         </Elem>
-        {!isFF(FF_DEV_3873) && store.hasInterface("infobar") && <Elem name="infobar">Task #{store.task.id}</Elem>}
+        {!isFF(FF_DEV_3873) && store.hasInterface("infobar") && (
+          <Elem name="infobar">任务 #{store.task.id}</Elem>
+        )}
       </Block>
     );
   }
@@ -126,7 +133,9 @@ class App extends Component {
   }
 
   _renderAll(obj) {
-    if (obj.length === 1) return <Segment annotation={obj[0]}>{[Tree.renderItem(obj[0].root)]}</Segment>;
+    if (obj.length === 1) {
+      return <Segment annotation={obj[0]}>{[Tree.renderItem(obj[0].root)]}</Segment>;
+    }
 
     return (
       <div className="ls-renderall">
@@ -140,10 +149,16 @@ class App extends Component {
   }
 
   _renderUI(root, as) {
-    if (as.viewingAll) return this.renderAllAnnotations();
+    if (as.viewingAll) {
+      return this.renderAllAnnotations();
+    }
 
     return (
-      <Block key={(as.selectedHistory ?? as.selected)?.id} name="main-view" onScrollCapture={this._notifyScroll}>
+      <Block
+        key={(as.selectedHistory ?? as.selected)?.id}
+        name="main-view"
+        onScrollCapture={this._notifyScroll}
+      >
         <Elem name="annotation">
           {<Annotation root={root} annotation={as.selected} />}
           {this.renderRelations(as.selected)}
@@ -158,7 +173,7 @@ class App extends Component {
 
     return (
       <Elem name="infobar" tag={Space} size="small">
-        <span>Task #{id}</span>
+        <span>任务 #{id}</span>
 
         {queue && <span>{queue}</span>}
       </Elem>
@@ -198,15 +213,25 @@ class App extends Component {
     const root = as.selected && as.selected.root;
     const { settings } = store;
 
-    if (store.isLoading) return this.renderLoader();
+    if (store.isLoading) {
+      return this.renderLoader();
+    }
 
-    if (store.noTask) return this.renderNothingToLabel(store);
+    if (store.noTask) {
+      return this.renderNothingToLabel(store);
+    }
 
-    if (store.noAccess) return this.renderNoAccess();
+    if (store.noAccess) {
+      return this.renderNoAccess();
+    }
 
-    if (store.labeledSuccess) return this.renderSuccess();
+    if (store.labeledSuccess) {
+      return this.renderSuccess();
+    }
 
-    if (!root) return this.renderNoAnnotation();
+    if (!root) {
+      return this.renderNoAnnotation();
+    }
 
     const viewingAll = as.viewingAll;
 
@@ -219,4 +244,95 @@ class App extends Component {
       </Block>
     );
 
-[94 more lines in file. Use offset=221 to continue.]
+    const outlinerEnabled = isFF(FF_DEV_1170);
+    const newUIEnabled = isFF(FF_DEV_3873);
+
+    return (
+      <Block
+        name="editor"
+        mod={{ fullscreen: settings.fullscreen, _auto_height: !outlinerEnabled }}
+        ref={isFF(FF_LSDV_4620_3_ML) ? reactCleaner(this) : null}
+      >
+        <Settings store={store} />
+        <Provider store={store}>
+          {newUIEnabled ? (
+            <InstructionsModal
+              visible={store.showingDescription}
+              onCancel={() => store.toggleDescription()}
+              title="标注说明"
+            >
+              {store.description}
+            </InstructionsModal>
+          ) : (
+            <>
+              {store.showingDescription && (
+                <Segment>
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(store.description) }} />
+                </Segment>
+              )}
+            </>
+          )}
+
+          {isDefined(store) && store.hasInterface("topbar") && <TopBar store={store} />}
+          <Block
+            name="wrapper"
+            mod={{
+              viewAll: viewingAll,
+              bsp: settings.bottomSidePanel,
+              outliner: outlinerEnabled,
+              showingBottomBar: newUIEnabled,
+            }}
+          >
+            {outlinerEnabled ? (
+              newUIEnabled ? (
+                <SideTabsPanels
+                  panelsHidden={viewingAll}
+                  currentEntity={as.selectedHistory ?? as.selected}
+                  regions={as.selected.regionStore}
+                  showComments={store.hasInterface("annotations:comments")}
+                  focusTab={store.commentStore.tooltipMessage ? "comments" : null}
+                >
+                  {mainContent}
+                  {store.hasInterface("topbar") && <BottomBar store={store} />}
+                </SideTabsPanels>
+              ) : (
+                <SidePanels
+                  panelsHidden={viewingAll}
+                  currentEntity={as.selectedHistory ?? as.selected}
+                  regions={as.selected.regionStore}
+                >
+                  {mainContent}
+                </SidePanels>
+              )
+            ) : (
+              <>
+                {mainContent}
+
+                {viewingAll === false && (
+                  <Block name="menu" mod={{ bsp: settings.bottomSidePanel }}>
+                    {store.hasInterface("side-column") && (
+                      <SidebarTabs>
+                        <AnnotationTab store={store} />
+                      </SidebarTabs>
+                    )}
+                  </Block>
+                )}
+
+                {newUIEnabled && store.hasInterface("topbar") && <BottomBar store={store} />}
+              </>
+            )}
+          </Block>
+        </Provider>
+        {store.hasInterface("debug") && <Debug store={store} />}
+      </Block>
+    );
+  }
+
+  _notifyScroll = () => {
+    if (this.relationsRef.current) {
+      this.relationsRef.current.onResize();
+    }
+  };
+}
+
+export default observer(App);

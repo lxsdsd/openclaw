@@ -105,9 +105,9 @@ target-version = ['py38']
 
 name = "label-studio"
 version = "1.13.1"
-description = "Label Studio annotation tool"
+description = "English-study labeling workflow fork with model backend support"
 authors = [
-    "Heartex <hello@heartex.ai>",
+    "English-study maintainers",
 ]
 readme = "README.md"
 license = "Apache-2.0"
@@ -116,7 +116,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
 ]
-homepage = "https://github.com/heartexlabs/label-studio"
 packages = [
     { include = "label_studio" },
 ]
@@ -198,5 +197,36 @@ python-json-logger = "2.0.4"
 google-cloud-storage = "^2.13.0"
 google-cloud-logging = "^3.10.0"
 mysqlclient = {version = "*", optional = true}
+django-csp = "3.7"
+openai = "^1.10.0"
 
-[34 more lines in file. Use offset=201 to continue.]
+# Humansignal repo dependencies
+
+label-studio-sdk = "1.0.5"
+
+[tool.poetry.group.test.dependencies]
+pytest = "7.2.2"
+pytest-cov = "2.12.1"
+pytest-django = "4.1.0"
+pytest-mock = "1.10.3"
+tavern = "2.3.0"
+fakeredis = "1.5.0"
+pytest-env = "0.6.2"
+responses = "0.13.0"
+pytest-xdist = "~=2.5.0"
+psutil = "5.9.4"
+freezegun = "~=1.2.2"
+pre-commit = "3.3.3"
+s3transfer = "0.7.0"
+mock = ">=5.1.0"
+moto = ">=4.2.6"
+requests-mock = "1.12.1"
+[tool.poetry.group.build.dependencies]
+twine = ">=4.0.2"
+
+[tool.poetry.extras]
+mysql = ["mysqlclient"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
