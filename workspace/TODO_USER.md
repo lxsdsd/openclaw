@@ -8,6 +8,7 @@ Keep this list short and actionable. Move items out as soon as they are resolved
 ## Active
 
 - [P1] When convenient, do one full Docker Desktop stop/start test and confirm OpenClaw still opens the same state after Windows-side restart.
+- [P1] Choose the first encrypted secret-backup mode for migration: either a GPG recipient key or a symmetric passphrase-file workflow.
 - [P1] Decide whether Claude Code Hub should stay standalone on `127.0.0.1:23000` or be explicitly integrated into OpenClaw workflows.
 - [P1] Decide whether to wait for the current `rightcode` quota/package window to recover or switch background jobs to a different working model path.
 - [P2] Decide whether to finalize bootstrap/identity cleanup now or later.
