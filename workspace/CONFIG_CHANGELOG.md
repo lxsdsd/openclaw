@@ -272,6 +272,36 @@ Validation:
   4. only then remove clearly redundant local artifacts
 - priority is to reclaim space without changing the canonical runtime root or breaking restart safety
 
+### Cloud backup and safe cleanup pass executed
+
+- pushed assistant-state snapshot repo:
+  - repo: `var/workspace/assistant-state-backup`
+  - remote branch: `origin/workspace-main`
+- pushed local runtime/tooling backup branch:
+  - repo: `/home/gaga/openclaw`
+  - remote branch: `userfork/codex-runtime-backup-20260320`
+- pushed English study deliverables into its own repo:
+  - repo: `var/workspace/projects/english-study/repo`
+  - remote branch: `origin/main`
+- ran `openclaw-pre-cleanup-check`
+- created fresh D-drive snapshot under `/mnt/d/openclaw-backups/20260320-115502`
+- reclaimed Docker build cache with `/usr/bin/docker builder prune -af`
+  - reclaimed output reported `14.56GB`
+- ran `scripts/verify-local-runtime.sh` after cleanup and it passed
+
+Cleanup actions completed without touching canonical runtime config/workspace mounts:
+
+- moved duplicate English study delivery tree to D-drive cleanup stash
+- moved English study `_vendor` helper copy to D-drive cleanup stash
+- moved English study `.git.broken-20260319-1916` to D-drive cleanup stash
+- moved English study Playwright browser cache to D-drive cleanup stash
+- moved workspace `.venvs` doc-tools cache to D-drive cleanup stash
+
+Important note:
+
+- even after Docker cache cleanup, `C:` remained critically low
+- this suggests the remaining `C:` pressure is not only live cache usage; Windows-side Docker/WSL virtual-disk compaction will likely be needed later if more space is required without deleting runtime data
+
 Validation:
 
 - `docker exec <openclaw-gateway> stat -c '%a %n' /home/node/.openclaw/openclaw.json`

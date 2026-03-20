@@ -46,6 +46,29 @@ Append detailed low-level mutations to `CONFIG_CHANGELOG.md`.
 
 Future sessions must not mix these three during commit or cleanup work.
 
+### Completed backup refs from this pass
+
+- assistant-state backup pushed to `origin/workspace-main`
+- runtime/tooling backup pushed to `userfork/codex-runtime-backup-20260320`
+- English study repo pushed to `origin/main`
+
+### Cleanup findings from this pass
+
+- The highest-risk reclaim target for `C:` was Docker build cache, not OpenClaw live state
+- `/usr/bin/docker builder prune -af` reclaimed `14.56GB` of builder cache
+- local image prune reclaimed very little by comparison
+- despite that, `C:` stayed under `3 GB` free
+
+Inference:
+
+- reclaiming builder cache helps, but does not fully shrink the Windows-side virtual disk while the stack remains live
+- future deeper reclaim likely needs a planned Windows/Docker/WSL compaction step after a safe shutdown window
+
+### Runtime safety check after cleanup
+
+- `scripts/verify-local-runtime.sh` passed after the cleanup pass
+- canonical mounts, device state, GH state, QMD state, and the Xiaohongshu sidecar remained intact
+
 ## 2026-03-19 20:15 Asia/Shanghai
 
 ### Restart verification follow-up
