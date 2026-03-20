@@ -13,7 +13,7 @@ One-time actionable tasks. Clear completed items quickly so this file stays focu
 
 ## Active
 
-- [P1] Restore live local-control visibility by fixing the `operator.read` path that keeps `openclaw status --all`, deep probes, and live scheduler inspection from using the cached operator device auth.
+- [P1] Rebuild and redeploy the local runtime from the source tree that already contains the operator-auth unification fix, then rerun `gateway status`, `gateway probe`, `gateway call`, and `status --all` on the live container.
 - [P1] Add and validate an encrypted backup path for secret-bearing runtime state (`devices`, `identity`, `gh`, `credentials`, cookies, and secret env files) so migration does not depend only on local mounts plus D-drive snapshots.
 - [P1] Reconcile reporting state: the live cron store is empty, so `report-2000-bjt` / `report-2200-bjt` are currently a scheduler-truth audit/rebuild task, not just a prompt-sizing task.
 - [P1] Keep the current `rightcode`-blocked worker jobs disabled until quota recovers or a different working model path is chosen; do not let them resume empty-spin.

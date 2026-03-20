@@ -90,6 +90,23 @@ Read this before attempting repair, restart, update, pairing, agent recovery, or
 - Current intended tracking for root repo:
   - local `main` -> `userfork/codex-runtime-backup-20260320`
 
+## Operator-auth deployment gap
+
+- Current state is split into two layers:
+  1. source repo contains the auth-unification fix
+  2. running container dist still reflects the old auth split
+- Verified source-side evidence:
+  - `src/gateway/operator-device-auth.ts` exists
+  - `src/gateway/call.ts` and `src/gateway/probe-auth.ts` import the shared operator-device helper
+  - commit `c600b340d` contains the main source/test landing for this work
+- Verified runtime-side evidence from the running gateway container:
+  - `/app/dist/probe-auth-*.js` still contains `disableDeviceIdentity`
+  - `/app/dist/auth-profiles-*.js` still contains the old `shouldAttachDeviceIdentityForGatewayCall(...)` branch
+  - runtime `/app/dist` does not yet expose the new shared helper name `resolveStoredOperatorDeviceToken`
+- Operational meaning:
+  - the machine is not yet “fixed live” even though the source work is present
+  - the next correct step is rebuild + redeploy, not more root-cause speculation
+
 ## Do not infer the wrong root
 
 Treat these as non-canonical unless a human explicitly tells you otherwise:

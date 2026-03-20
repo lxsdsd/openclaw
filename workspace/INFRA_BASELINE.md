@@ -100,6 +100,16 @@ Future sessions must not mix these three during commit or cleanup work.
 - Root `main` now tracks `userfork/codex-runtime-backup-20260320`
 - This should reduce IDE confusion where already-pushed local runtime/tooling commits looked like unpushed divergence only because the comparison target was still `origin/main`
 
+### Operator-auth repair is blocked on deployment, not on diagnosis
+
+- A later verification pass confirmed that the source repo already contains the operator-auth unification work and related tests
+- However, the running gateway container still serves an older `/app/dist` that preserves the split behavior OpenClaw independently observed
+- This means the current blocker is deployment propagation:
+  - rebuild the runtime image or bundle from the updated source tree
+  - redeploy the local runtime using the canonical runtime scripts
+  - only then rerun `gateway status`, `gateway probe`, `gateway call`, and `status --all`
+- Future sessions should not spend another pass rediscovering the same auth split before first checking whether the running `/app/dist` was rebuilt from the fixed source tree
+
 ### Sensitive migration path improved
 
 - Added encrypted secret-state backup scaffolding at:

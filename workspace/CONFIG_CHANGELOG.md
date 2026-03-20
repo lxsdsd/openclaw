@@ -191,6 +191,30 @@ Validation:
 
 - `git log --branches --not --remotes` returns zero commits in all three repos
 - `git branch -vv` for root repo now shows `main` tracking `userfork/codex-runtime-backup-20260320`
+
+### Operator-auth source fix is present in repo but not yet deployed into runtime dist
+
+- Re-verified locally that the source-side auth-unification work exists in the repo:
+  - `src/gateway/operator-device-auth.ts`
+  - `src/gateway/call.ts`
+  - `src/gateway/probe-auth.ts`
+  - `src/commands/gateway-status/helpers.ts`
+  - related tests also exist in `src/...*.test.ts`
+- Re-verified that commit `c600b340d` contains the intended source/test changes for operator-auth unification
+- Re-verified that the currently running container still exposes old dist behavior under `/app/dist`:
+  - `probe-auth-*.js` still contains `disableDeviceIdentity`
+  - `auth-profiles-*.js` still contains the old `shouldAttachDeviceIdentityForGatewayCall(...)` path
+  - no `resolveStoredOperatorDeviceToken` hit was found in runtime `/app/dist`
+
+Conclusion:
+
+- the diagnosis and source fix direction are aligned
+- but the fix is not yet live in the running OpenClaw runtime on this machine
+
+Next repair requirement:
+
+- do not re-diagnose from scratch
+- instead rebuild/redeploy the local OpenClaw runtime from the source tree that already contains `c600b340d` and later commits, then rerun the local gateway regression checks
 - copied current cookies from existing container into host file
 - recreated `xiaohongshu-mcp` under compose with bind-mounted cookie storage
 
