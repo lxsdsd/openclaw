@@ -118,6 +118,22 @@ Added AGENTS guardrail:
 - added `xiaohongshu-mcp` service to `docker-compose.agent-reach.yml`
 - set loopback-only port mapping `127.0.0.1:18060:18060`
 - mounted `./var/xiaohongshu-mcp/cookies.json` to `/cookies.json`
+
+## 2026-03-20
+
+### Backup target mapping re-confirmed
+
+- Re-confirmed that three different git histories are in use and must not be mixed:
+  - product/tooling repo: `/home/gaga/openclaw`
+  - assistant runtime backup repo: `var/workspace/assistant-state-backup`
+  - English study repo: `var/workspace/projects/english-study/repo`
+- Re-confirmed that runtime markdown, learnings, memory, agent role files, and workspace-side skill notes belong in the assistant backup repo, not in the product repo
+- Re-confirmed that English study delivery outputs belong in the English study repo, not in the product repo
+
+Validation:
+
+- `assistant-state-backup/save-point.sh` completed a fresh sync pass
+- backup repo was already up to date after sync, so no additional runtime delta was left uncommitted there
 - copied current cookies from existing container into host file
 - recreated `xiaohongshu-mcp` under compose with bind-mounted cookie storage
 

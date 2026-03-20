@@ -52,6 +52,16 @@ Future sessions must not mix these three during commit or cleanup work.
 - runtime/tooling backup pushed to `userfork/codex-runtime-backup-20260320`
 - English study repo pushed to `origin/main`
 
+### Git boundary rule re-confirmed
+
+- Root `openclaw` repo dirt is not automatically “missing product commits”
+- On this machine, root `git status` also sees live runtime files under `var/workspace`, nested backup repos, and nested project repos
+- Therefore “many local files not yet pushed” must be classified before committing:
+  - runtime state -> assistant backup repo
+  - English study work -> English study repo
+  - product code / scripts / compose / Dockerfiles -> product repo
+- A fresh `assistant-state-backup/save-point.sh` sync confirmed the assistant backup repo already contains the current runtime notes and learnings from this pass
+
 ### Cleanup findings from this pass
 
 - The highest-risk reclaim target for `C:` was Docker build cache, not OpenClaw live state

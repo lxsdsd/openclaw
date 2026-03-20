@@ -16,6 +16,18 @@ Read this before attempting repair, restart, update, pairing, agent recovery, or
 - Canonical host-side update entrypoint: `scripts/update-local-runtime.sh`
 - Canonical migration snapshot entrypoint: `scripts/snapshot-state-to-d.sh`
 
+## Canonical git boundaries
+
+- Product/tooling history lives in the repo root: `/home/gaga/openclaw`
+- Runtime state backup lives in `var/workspace/assistant-state-backup`
+- English study project history lives in `var/workspace/projects/english-study/repo`
+- If `git status` at the repo root shows runtime markdown, memory files, project delivery files, or nested project repos, do not assume those belong in the product repo
+- First decide whether the change belongs to:
+  - product source / scripts / compose files
+  - assistant runtime backup
+  - English study project history
+- Only create a new repo if an artifact set has durable value and still fits none of the three boundaries above
+
 ## Do not infer the wrong root
 
 Treat these as non-canonical unless a human explicitly tells you otherwise:
