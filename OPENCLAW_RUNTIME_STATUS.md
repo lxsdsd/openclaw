@@ -1,0 +1,353 @@
+# OpenClaw Runtime Status
+
+Last updated: 2026-03-20
+
+## Purpose
+
+This file is the single short handoff for OpenClaw itself.
+Read this before attempting repair, restart, update, pairing, agent recovery, or config repair on this machine.
+
+## Canonical runtime
+
+- Runtime config root: `var/config`
+- Runtime workspace root: `var/workspace`
+- Canonical startup entrypoint: `scripts/start-local-runtime.sh`
+- Canonical verification entrypoint: `scripts/verify-local-runtime.sh`
+- Canonical host-side update entrypoint: `scripts/update-local-runtime.sh`
+- Canonical migration snapshot entrypoint: `scripts/snapshot-state-to-d.sh`
+
+## Canonical git boundaries
+
+- Product/tooling history lives in the repo root: `/home/gaga/openclaw`
+- Runtime state backup lives in `var/workspace/assistant-state-backup`
+- English study project history lives in `var/workspace/projects/english-study/repo`
+- If `git status` at the repo root shows runtime markdown, memory files, project delivery files, or nested project repos, do not assume those belong in the product repo
+- First decide whether the change belongs to:
+  - product source / scripts / compose files
+  - assistant runtime backup
+  - English study project history
+- Only create a new repo if an artifact set has durable value and still fits none of the three boundaries above
+
+## Secret-bearing persistence boundaries
+
+- Not every persistent path should be pushed into a git remote
+- These paths can contain live pairing state, auth state, or cookies and must be treated as secret-bearing:
+  - `var/config/devices`
+  - `var/config/identity`
+  - `var/config/gh`
+  - `var/config/credentials`
+  - `var/xiaohongshu-mcp/cookies.json`
+  - `var/qmd-memory-service/.env`
+- Current safe posture on this machine:
+  - non-secret runtime notes and workspace state -> assistant backup repo
+  - project artifacts -> project repo
+  - secret-bearing runtime state -> mounted persistent paths plus D-drive snapshots
+- If encrypted cloud backup is required later, add a dedicated encrypted backup workflow instead of committing raw secret-bearing files into the code repos
+
+### Encrypted backup workflow now scaffolded
+
+- Backup script: `scripts/backup-sensitive-runtime-state.sh`
+- Restore script: `scripts/restore-sensitive-runtime-state.sh`
+- Default design:
+  - encrypted archive goes to `/mnt/d/OpenClaw/encrypted-backups`
+  - temp work stays on `/mnt/d/OpenClaw/tmp`
+  - root `.env` is excluded by default to keep secret handling minimal
+- Supported modes:
+  - GPG recipient encryption with `--recipient <key-id-or-email>`
+  - symmetric encryption with `--symmetric --passphrase-file <file>`
+- Included paths by default:
+  - `var/config/devices`
+  - `var/config/identity`
+  - `var/config/gh`
+  - `var/config/credentials`
+  - `var/xiaohongshu-mcp/cookies.json`
+  - `var/qmd-memory-service/.env`
+- Optional:
+  - add `--include-root-env` only when a deliberate encrypted backup of root `.env` is actually needed
+
+### Current key-management finding
+
+- No local GPG keyring was found at the default path under `/home/gaga/.gnupg`
+- Therefore the current most practical first-run encrypted backup path on this machine is:
+  - symmetric encryption
+  - passphrase file stored outside the repo
+  - encrypted archive written to `D:`
+- This avoids blocking on GPG keypair setup and matches the current “stabilize first” priority
+
+### Recommended first encrypted-backup posture
+
+- Use `scripts/backup-sensitive-runtime-state.sh --symmetric --passphrase-file <file>`
+- Store the passphrase file outside the repo and outside normal synced workspace state
+- Store the resulting `.gpg`, `.manifest.txt`, and `.sha256` under `D:` first
+- Only after verifying restore staging should a copy of the encrypted archive be uploaded to cloud storage
+
+## Plugin status update: `context-safe`
+
+- A local offline plugin source tree exists at `/mnt/d/openclaw-context-safe-plugin-20260313`
+- That plugin has now been staged into the canonical runtime extension root:
+  - `var/config/extensions/context-safe`
+- Persistent config has been updated so the next runtime restart should load it as the active context engine:
+  - `plugins.entries.context-safe.enabled: true`
+  - `plugins.slots.contextEngine: "context-safe"`
+- Why no compose edit was required:
+  - this Docker topology already bind-mounts `var/config` as the runtime state dir
+  - OpenClaw discovers installed plugins from `$OPENCLAW_STATE_DIR/extensions`
+
+## Plugin status update: `openclaw-customprovider-cache`
+
+- Current status: staged into canonical runtime state and configured, pending live restart verification
+- Local source tree used:
+  - `/mnt/d/openclaw-customprovider-cache`
+- Persistent config now includes:
+  - `plugins.entries.openclaw-customprovider-cache.enabled: true`
+  - provider allowlist: `rightcode`, `foxcode-ultra`, `foxcode-aws`
+- Intended effect:
+  - preserve provider-facing cache/session identifiers for these custom providers without touching API keys or transcript history
+
+## Plugin status update: `context-safe`
+
+- Current staged source was refreshed from local commit `81a61ce`
+- `plugins.slots.contextEngine` remains set to `context-safe`
+- Both plugins now require one runtime recreate to become live together
+
+## Live-action permission note
+
+- Current Codex session is file-capable but not Docker-capable
+- Practical meaning:
+  - can update `var/config`, extension trees, docs, and scripts
+  - cannot currently talk to the Docker daemon to recreate containers or run `openclaw` inside the gateway container
+- Therefore when `.env` changes or plugin installs need live verification, use a Docker-capable session or run the canonical scripts directly on the machine
+
+## Root repo fake-dirty rule
+
+- On this machine, a noisy root `git status` often means the product repo is seeing live runtime paths that belong to the running stack, not that product code is missing cloud backup
+- Short version:
+  - `git status` noisy != product repo unbacked
+  - it often just means the wrong repo is observing the files
+- First response:
+  1. check whether the files are under `var/workspace`, `var/config`, `var/qmd-memory-service`, or `var/xiaohongshu-mcp`
+  2. decide which canonical repo or persistence bucket owns them
+  3. if this is only root-repo visibility noise, run `scripts/apply-local-runtime-git-hygiene.sh`
+- Reverse path:
+  - if a future repair session needs the raw root-repo view again, run `scripts/clear-local-runtime-git-hygiene.sh`
+
+## Root repo history comparison rule
+
+- Root repo local backup commits are currently anchored to `userfork/codex-runtime-backup-20260320`, not to `origin/main`
+- Therefore:
+  - many commits visible in the IDE history does not imply they are still local-only
+  - comparing root `main` to `origin/main` will overstate divergence and confuse backup status
+- First check:
+  - `git log --branches --not --remotes`
+  - if that is empty, the commits are already on some remote
+- Current intended tracking for root repo:
+  - local `main` -> `userfork/codex-runtime-backup-20260320`
+
+## Operator-auth deployment gap
+
+- Current state is split into two layers:
+  1. source repo contains the auth-unification fix
+  2. running container dist still reflects the old auth split
+- Verified source-side evidence:
+  - `src/gateway/operator-device-auth.ts` exists
+  - `src/gateway/call.ts` and `src/gateway/probe-auth.ts` import the shared operator-device helper
+  - commit `c600b340d` contains the main source/test landing for this work
+- Verified runtime-side evidence from the running gateway container:
+  - `/app/dist/probe-auth-*.js` still contains `disableDeviceIdentity`
+  - `/app/dist/auth-profiles-*.js` still contains the old `shouldAttachDeviceIdentityForGatewayCall(...)` branch
+  - runtime `/app/dist` does not yet expose the new shared helper name `resolveStoredOperatorDeviceToken`
+- Operational meaning:
+  - the machine is not yet “fixed live” even though the source work is present
+  - the next correct step is rebuild + redeploy, not more root-cause speculation
+
+## Do not infer the wrong root
+
+Treat these as non-canonical unless a human explicitly tells you otherwise:
+
+- `~/.openclaw`
+- Docker named volumes
+- temporary recovery directories
+- backup directories
+- workspace markdown alone
+
+For this machine, the Docker runtime must use the mounted host paths:
+
+- `var/config -> /home/node/.openclaw`
+- `var/workspace -> /home/node/.openclaw/workspace`
+- `var/workspace/config/mcporter.json -> /app/config/mcporter.json`
+
+## MCP config rule
+
+- The portable source of truth for `mcporter` is `var/workspace/config/mcporter.json`
+- The running gateway reads `/app/config/mcporter.json`
+- Therefore the Docker runtime must bind-mount the workspace file into `/app/config/mcporter.json`
+- If `xiaohongshu`, `weibo`, or other MCP entries disappear after restart, check this mount before editing any other file
+- `xiaohongshu-mcp` also reads `cookies.json` relative to `/app`, so the persisted cookie file must be mounted at `/app/cookies.json`, not at `/cookies.json`
+
+## QMD status
+
+- `main` now uses native OpenClaw `qmd` memory backend, not builtin SQLite
+- Verified status comes from `scripts/openclaw-runtime-cli.sh memory status --agent main --json`
+- Live `dbPath` is under `/home/node/.openclaw/agents/main/qmd/...`
+- Host persistence path is `${OPENCLAW_QMD_MAIN_DIR:-/mnt/d/OpenClaw/qmd-memory/openclaw-main-qmd}`
+- Do not confuse this with the separate `var/qmd-memory-service/` sidecar stack; that sidecar is not the current OpenClaw main memory backend
+
+## Important distinction
+
+There are two different shapes of agent-related files:
+
+1. Runtime registrations
+   - live config in `var/config/openclaw.json`
+   - live runtime state in `var/config/agents`
+   - this is what the UI and gateway actually use
+
+2. Workspace role files
+   - `var/workspace/agents/<id>/...`
+   - these are role docs, assignment boards, notes, and prompts
+   - these do not automatically make an agent appear in the UI
+
+If UI and markdown disagree, trust live runtime config first.
+
+## Multi-agent rule for this machine
+
+Only `agents.list[]` in live config counts as a registered agent.
+
+Potential independent workspaces discovered on disk:
+
+- `var/workspace-builder-a`
+- `var/workspace-builder-b`
+- `var/workspace-research`
+- `var/workspace-watchdog`
+- `var/workspace/agents/delivery-lead`
+- `var/workspace/agents/monetization`
+
+Role-doc directories under `var/workspace/agents/*` are not enough by themselves.
+They must be registered explicitly in `var/config/openclaw.json` if they should appear in UI/runtime.
+
+## Update policy
+
+This runtime uses a custom local Docker image:
+
+- image name: `openclaw-agent-reach:local`
+- base image: upstream OpenClaw image
+- local additions: extra CLI/tools/packages in `Dockerfile.agent-reach`
+
+Consequences:
+
+- in-container self-update is not the authoritative update path
+- Control UI `update.run` may update the running container filesystem, but that can be lost on container recreate
+- persistent state is preserved by mounted host directories, not by container internals
+
+Safe update path:
+
+1. `scripts/snapshot-state-to-d.sh`
+2. `scripts/update-local-runtime.sh`
+3. `scripts/verify-local-runtime.sh`
+
+Do not use a bare `docker compose up` from memory.
+
+## Current known issues
+
+### 0. Local operator auth used to split across command families
+
+- Root cause is now code-confirmed, not speculative:
+  - `gateway status`
+  - `gateway probe`
+  - `gateway call`
+  - `status --all`
+  historically did not share one identical local-auth selection path
+- Impact:
+  - some commands could still report healthy service-level status while others failed with `missing scope: operator.read`, `1000 normal closure`, or `timeout`
+- Current repair status:
+  - a shared local operator-token preference path was added in source for trusted local self-connections
+  - this reduces ambient env-token shadowing of paired device auth
+- Important nuance:
+  - this does **not** mean Docker-side gateway token env should be deleted blindly
+  - service-side gateway auth and client-side operator auth are separate concerns on this machine
+- Operational rule:
+  - if a future session sees `gateway status` and `gateway call` disagree again, inspect local operator-device auth selection before touching container mounts or Feishu config
+
+### 1. Agent UI visibility is incomplete
+
+- Root cause: live runtime config is missing explicit `agents.list[]` registrations for the expected worker roster
+- Effect: UI can show only `main` even though role/workspace files exist
+
+### 2. Skills visibility and runtime registration are separate
+
+- Local skills exist under `var/workspace/skills`
+- Live config may still be missing related enablement or per-skill config
+- Do not assume a skill is active only because its files exist
+
+### 3. Feishu is not fully enabled in live runtime
+
+- Logs already showed tool allowlist entries for Feishu without matching live plugin/config enablement
+- Result: Feishu tools can appear as unknown allowlist entries and Feishu integration looks half-configured
+
+### 4. Main session model path has a RightCode Responses-state failure
+
+- Symptom: `HTTP 404 ... Item with id 'rs_...' not found. Items are not persisted when store is set to false`
+- This is separate from mount health
+- Do not misdiagnose it as a Docker mount loss by default
+
+## Outage root cause
+
+This machine's recurrent failures are not explained by a single Feishu bug.
+The deepest root cause is runtime-state split plus inconsistent Docker control path.
+
+### State split
+
+Multiple OpenClaw state roots have existed on this machine:
+
+- `var/config`
+- `~/.openclaw`
+- `openclaw_recovery`
+- backup/config copies under workspace
+
+If startup, restore, recovery, or repair work touches the wrong root, the running gateway can come up with:
+
+- missing `channels.feishu`
+- missing `agents.list`
+- missing or stale device/pairing state
+- stale provider/model config
+
+That makes it look like Feishu, skills, agents, todo files, and personality all disappeared together.
+
+### Docker control-path split
+
+There was also an execution-path split:
+
+- Windows wrapper path: `~/bin/docker` -> `docker.exe`
+- WSL-native path: `/usr/bin/docker`
+
+For this machine, using the wrong path can cause the operator to edit one WSL file tree while the running container effectively sees a different config snapshot.
+
+### Mandatory guardrail
+
+For local lifecycle commands on this machine:
+
+- prefer `/usr/bin/docker`
+- use `scripts/start-local-runtime.sh`
+- use `scripts/verify-local-runtime.sh`
+- do not treat Windows `docker.exe` wrapper control as equivalent for local repair work
+
+## Repair order
+
+When OpenClaw looks broken on this machine, use this order:
+
+1. Verify runtime health and mounts
+   - `scripts/verify-local-runtime.sh`
+2. Confirm live config root and workspace root
+3. Check `var/config/openclaw.json` for:
+   - `agents.list`
+   - `skills.entries`
+   - live channel config
+4. Only then investigate session/model/provider issues
+5. Before risky repair, create a fresh D-drive snapshot
+
+## What not to do
+
+- Do not guess the runtime root
+- Do not treat workspace markdown as live registration
+- Do not treat container-local package updates as durable
+- Do not start recovery by “restoring files” before verifying the active runtime root
+- Do not recreate containers blindly without confirming the mounted config/workspace paths

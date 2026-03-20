@@ -1,0 +1,25 @@
+# Runtime / sensitive
+.env
+*.sqlite
+*.db
+node_modules/
+*.log
+__pycache__/
+.cache/
+*.pyc
+
+# Large / generated
+*.vhdx
+*.tar.gz
+*.zip
+
+# Agent session data (too large, contains secrets)
+.openclaw/
+agents/*/sessions/
+
+# Learnings (local only)
+.learnings/
+
+# OS
+.DS_Store
+Thumbs.db
