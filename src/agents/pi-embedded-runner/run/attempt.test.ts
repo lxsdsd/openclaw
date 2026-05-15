@@ -13,6 +13,7 @@ import {
   shouldInjectOllamaCompatNumCtx,
   decodeHtmlEntitiesInObject,
   wrapOllamaCompatNumCtx,
+  wrapStreamFnRepairToolUseResultPairing,
   wrapStreamFnRepairMalformedToolCallArguments,
   wrapStreamFnTrimToolCallNames,
 } from "./attempt.js";
@@ -982,6 +983,73 @@ describe("wrapOllamaCompatNumCtx", () => {
     expect(baseFn).toHaveBeenCalledTimes(1);
     expect((payloadSeen?.options as Record<string, unknown> | undefined)?.num_ctx).toBe(202752);
     expect(downstream).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("wrapStreamFnRepairToolUseResultPairing", () => {
+  it("drops orphaned tool results before the provider request", () => {
+    const baseFn = vi.fn((_model, context) => context);
+    const wrapped = wrapStreamFnRepairToolUseResultPairing(baseFn as never);
+    const context = {
+      messages: [
+        { role: "user", content: [{ type: "text", text: "retry" }] },
+        {
+          role: "toolResult",
+          toolCallId: "call_missing",
+          toolName: "read",
+          content: [{ type: "text", text: "stale result" }],
+          isError: false,
+        },
+      ],
+    };
+
+    void wrapped({} as never, context as never, {} as never);
+
+    expect(baseFn).toHaveBeenCalledTimes(1);
+    expect(baseFn.mock.calls[0]?.[1]).toEqual({
+      messages: [{ role: "user", content: [{ type: "text", text: "retry" }] }],
+    });
+  });
+
+  it("re-pairs displaced tool results instead of dropping them", () => {
+    const baseFn = vi.fn((_model, context) => context);
+    const wrapped = wrapStreamFnRepairToolUseResultPairing(baseFn as never);
+    const context = {
+      messages: [
+        {
+          role: "assistant",
+          content: [{ type: "toolCall", id: "call_1", name: "read", arguments: {} }],
+        },
+        { role: "user", content: [{ type: "text", text: "wait" }] },
+        {
+          role: "toolResult",
+          toolCallId: "call_1",
+          toolName: "read",
+          content: [{ type: "text", text: "ok" }],
+          isError: false,
+        },
+      ],
+    };
+
+    void wrapped({} as never, context as never, {} as never);
+
+    expect(baseFn).toHaveBeenCalledTimes(1);
+    expect(baseFn.mock.calls[0]?.[1]).toEqual({
+      messages: [
+        {
+          role: "assistant",
+          content: [{ type: "toolCall", id: "call_1", name: "read", arguments: {} }],
+        },
+        {
+          role: "toolResult",
+          toolCallId: "call_1",
+          toolName: "read",
+          content: [{ type: "text", text: "ok" }],
+          isError: false,
+        },
+        { role: "user", content: [{ type: "text", text: "wait" }] },
+      ],
+    });
   });
 });
 

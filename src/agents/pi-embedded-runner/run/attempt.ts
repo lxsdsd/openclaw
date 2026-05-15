@@ -425,6 +425,26 @@ export function wrapOllamaCompatNumCtx(baseFn: StreamFn | undefined, numCtx: num
     });
 }
 
+export function wrapStreamFnRepairToolUseResultPairing(baseFn: StreamFn | undefined): StreamFn {
+  const streamFn = baseFn ?? streamSimple;
+  return (model, context, options) => {
+    const ctx = context as unknown as { messages?: unknown };
+    const messages = ctx?.messages;
+    if (!Array.isArray(messages)) {
+      return streamFn(model, context, options);
+    }
+    const sanitized = sanitizeToolUseResultPairing(messages as AgentMessage[]);
+    if (sanitized === messages) {
+      return streamFn(model, context, options);
+    }
+    const nextContext = {
+      ...(context as unknown as Record<string, unknown>),
+      messages: sanitized,
+    } as unknown;
+    return streamFn(model, nextContext as typeof context, options);
+  };
+}
+
 function resolveCaseInsensitiveAllowedToolName(
   rawName: string,
   allowedToolNames?: Set<string>,
@@ -1995,6 +2015,12 @@ export async function runEmbeddedAttempt(
           } as unknown;
           return inner(model, nextContext as typeof context, options);
         };
+      }
+
+      if (transcriptPolicy.repairToolUseResultPairing) {
+        activeSession.agent.streamFn = wrapStreamFnRepairToolUseResultPairing(
+          activeSession.agent.streamFn,
+        );
       }
 
       if (

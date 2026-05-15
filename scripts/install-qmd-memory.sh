@@ -4,6 +4,16 @@ set -euo pipefail
 service_root="${1:-/home/gaga/openclaw/var/qmd-memory-service}"
 data_root="${2:-/mnt/d/OpenClaw/qmd-memory}"
 
+if [[ -n "${DOCKER_BIN:-}" ]]; then
+  docker_bin="$DOCKER_BIN"
+elif [[ -x /usr/bin/docker ]]; then
+  docker_bin=/usr/bin/docker
+elif [[ -x "$HOME/bin/docker" ]]; then
+  docker_bin="$HOME/bin/docker"
+else
+  docker_bin="$(command -v docker)"
+fi
+
 mkdir -p "$service_root" "$data_root/qdrant_storage"
 touch "$service_root/.env"
 
@@ -32,7 +42,7 @@ This service is bound to loopback only and is intended to act as a durable
 memory/vector backend for local tooling and future OpenClaw memory integration.
 EOF
 
-"$HOME/bin/docker" compose --project-directory "$service_root" -f "$service_root/docker-compose.yml" up -d
+"$docker_bin" compose --project-directory "$service_root" -f "$service_root/docker-compose.yml" up -d
 
 printf 'QMD service root: %s\n' "$service_root"
 printf 'QMD data root: %s\n' "$data_root"

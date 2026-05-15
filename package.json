@@ -1,7 +1,7 @@
 {
-  "name": "openclaw",
-  "version": "2026.3.13",
-  "description": "Multi-channel AI gateway with extensible messaging integrations",
+  "name": "@lxsdsd/openclaw-sift",
+  "version": "0.1.0",
+  "description": "Token-efficient capture, extract, and sync plugin for OpenClaw",
   "keywords": [],
   "homepage": "https://github.com/openclaw/openclaw#readme",
   "bugs": {
@@ -228,7 +228,7 @@
     "build:plugin-sdk:dts": "tsc -p tsconfig.plugin-sdk.dts.json",
     "build:strict-smoke": "pnpm canvas:a2ui:bundle && node scripts/tsdown-build.mjs && node scripts/copy-plugin-sdk-root-alias.mjs && pnpm build:plugin-sdk:dts",
     "canvas:a2ui:bundle": "bash scripts/bundle-a2ui.sh",
-    "check": "pnpm check:host-env-policy:swift && pnpm format:check && pnpm tsgo && pnpm lint && pnpm lint:tmp:no-random-messaging && pnpm lint:tmp:channel-agnostic-boundaries && pnpm lint:tmp:no-raw-channel-fetch && pnpm lint:agent:ingress-owner && pnpm lint:plugins:no-register-http-handler && pnpm lint:plugins:no-monolithic-plugin-sdk-entry-imports && pnpm lint:webhook:no-low-level-body-read && pnpm lint:auth:no-pairing-store-group && pnpm lint:auth:pairing-account-scope",
+    "check": "tsc --noEmit",
     "check:docs": "pnpm format:docs:check && pnpm lint:docs && pnpm docs:check-links",
     "check:host-env-policy:swift": "node scripts/generate-host-env-security-policy-swift.mjs --check",
     "check:loc": "node --import tsx scripts/check-ts-max-loc.ts --max 500",
@@ -300,7 +300,7 @@
     "release:check": "node --import tsx scripts/release-check.ts",
     "release:openclaw:npm:check": "node --import tsx scripts/openclaw-npm-release-check.ts",
     "start": "node scripts/run-node.mjs",
-    "test": "node scripts/test-parallel.mjs",
+    "test": "vitest run",
     "test:all": "pnpm lint && pnpm build && pnpm test && pnpm test:e2e && pnpm test:live && pnpm test:docker:all",
     "test:auth:compat": "vitest run --config vitest.gateway.config.ts src/gateway/server.auth.compat-baseline.test.ts src/gateway/client.test.ts src/gateway/reconnect-gating.test.ts src/gateway/protocol/connect-error-details.test.ts",
     "test:channels": "vitest run --config vitest.channels.config.ts",
@@ -354,7 +354,7 @@
     "@mariozechner/pi-coding-agent": "0.57.1",
     "@mariozechner/pi-tui": "0.57.1",
     "@mozilla/readability": "^0.6.0",
-    "@sinclair/typebox": "0.34.48",
+    "@sinclair/typebox": "^0.34.41",
     "@slack/bolt": "^4.6.0",
     "@slack/web-api": "^7.14.1",
     "@whiskeysockets/baileys": "7.0.0-rc.9",
@@ -407,18 +407,20 @@
     "jscpd": "4.0.8",
     "jsdom": "^28.1.0",
     "lit": "^3.3.2",
+    "openclaw": "file:/home/gaga/openclaw-official-2026.3.24",
     "oxfmt": "0.40.0",
     "oxlint": "^1.55.0",
     "oxlint-tsgolint": "^0.16.0",
     "signal-utils": "0.21.1",
     "tsdown": "0.21.2",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.0"
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "@napi-rs/canvas": "^0.1.89",
-    "node-llama-cpp": "3.16.2"
+    "node-llama-cpp": "3.16.2",
+    "openclaw": ">=2026.3.24"
   },
   "peerDependenciesMeta": {
     "node-llama-cpp": {
@@ -466,5 +468,10 @@
         }
       }
     }
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
   }
 }

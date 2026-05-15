@@ -26,7 +26,7 @@ config["memory"] = {
     "backend": "qmd",
     "citations": "auto",
     "qmd": {
-        "command": "/usr/local/bin/qmd",
+        "command": "/home/gaga/.local/bin/qmd",
         "searchMode": "search",
         "includeDefaultMemory": True,
         "sessions": {
